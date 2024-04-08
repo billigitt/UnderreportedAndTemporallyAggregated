@@ -1,0 +1,444 @@
+---
+title: " Reproduction Number Inference, accounting for under-reporting & temporally aggregated data"
+author: "Zak OG"
+date: "2024-01-02"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Motivation
+
+Using renewal equation methods to infer $R_t$ can suffer from atleast the following two problems with regards to incidence:
+
+-   Temporally aggregated incidence data, i.e. incidence is recorded on a scale that is relatively long compared to the serial interval.
+    -   May lead to over-estimating mean of serial interval, which pushes $R_t$ inference further from unity.
+-   Under-reporting of incidence, i.e. only a fraction of the infected population are recorded.
+    -   If under-reporting is known to be constant w.r.t time, effect is minimal but otherwise, effect could be signficant.
+    -   Could have a significant impact on credible interval
+
+## Solution Concept (I think!)
+
+-   Reconstruct possible sets of true incidence, $I_t^{(P)}$ via simulation (i.e. find extra un-reported cases and on temporally dis-aggregated time-steps) with knowledge of $\hat{I}_t$, $\boldsymbol{w}^{(P)}$ and $\rho$ (the probability of an infection being reported)
+-   Estimate $R_t$ using the same ABC approach as in Ogi-Gittins et al. except
+    -   with $I_t^{(P)}$ within the renewal equation framework instead of $\hat{I}_t^{(P)}$,
+    -   all simulations with $I_t \geq \hat{I}_t$ are accepted and weighted by Binomial likelihood (given $\rho$)
+
+## Methodology (Set-up)
+
+-   Discretise SI to desired temporal granularity. Let $P$ be the partitioning value that splits old time-step into new.
+-   Choose prior for $R_t$.
+-   Choose $\rho$ as assumed reporting proportion. Let $I_t$ be the true incidence at time $t$, and $\hat{I}_t$ the recorded incidence.
+-   Sample $\hat{I}^{(P)}_{1,2, \ldots P}$ from Multinomial distribution, i.e. $\hat{I}^{(P)}_{1,2, \ldots P} \sim \mathrm{Multi}(\hat{I}_1, [1/P, 1/P, \ldots , 1/P])$.
+-   Need a probability distribution to map $\hat{I}^{(P)}_{1,2, \ldots P}$ to $I^{(P)}_{1,2, \ldots P}$, which we sample from.
+-   Run routine (next slide) from $t = 2, 3, \ldots , T$ with $\mathrm{Nsim}$ acceptances for each time-step.
+
+## Methodology (Routine)
+
+-   Sample $R_t$ from prior and randomly sample from partitioned incidence in past (with repetition).
+-   Simulate $I_t^{\mathrm{Sim}} \sim \mathrm{Poi}(R_t\sum_i I^{(P)}_{t-i}w^{(P)}_i)$.
+-   If $I_t^{\mathrm{Sim}}< I_t$, reject. If $I_t^{\mathrm{Sim}}\geq I_t$, accept.
+-   For accepted simulations, calculate likelihood using Binomial distribution, i.e. $\mathbb{P}(I_t^{\mathrm{Sim}}|I_t, \rho) = {I_t^{\mathrm{Sim}}\choose I_t}\rho^{I_t}(1-\rho)^{(I_t^{\mathrm{Sim}} - I_t)}$.
+-   Store tuple: $(R_t^{\mathrm{Sim}},L_t^{\mathrm{Sim}})$, where $L_t$ is the likelihood calculated.
+-   Once simulation acceptance threshold is met, calculate empirical CDF for $R_t$ by looking at cumulative sum of likelihoods. Use this to calculate credible intervals.
+-   Calculate mean by $\frac{\sum_{\mathrm{Sim}}R_t^{\mathrm{Sim}} \times L_t^{\mathrm{Sim}}}{\sum_{\mathrm{Sim}} L_t^{\mathrm{Sim}}}$.
+-   Calculate CI by interpolating empirical CDF on desired thresholds, i.e. 95%.
+
+```{r analysis1, eval = TRUE}
+
+library(purrr)
+library(likelihoodExplore)
+library(progress)
+library(pracma)
+library(DescTools)
+library(utils)
+library(ggplot2)
+library(profvis)
+library(Rfast)
+
+set.seed(5)
+
+directory_path <- "../R0/R"
+
+# List all the R script files within the directory
+files <- list.files(path = directory_path, pattern = "\\.R$", full.names = TRUE)
+
+# Source each R script file in the directory
+for (file in files) {
+  source(file)
+}
+
+source("underRepFunctions.R")
+
+trueWeeklyR <- c(rep(1.5,5), rep(0.75, 5))
+nWeeks <- length(trueWeeklyR)
+trueP <- 1000
+defaultP <- 7
+wContGamPar <- c(4,1/10.8)
+divisionsPerP <- 1e1
+nWeeksForSI <- 50
+wTrue <- siCalc(wContGamPar, trueP, nWeeksForSI, divisionsPerP)
+divisionsPerP <- 1e3
+PoissonOrRound <- "P" #P/R
+probReported <- 0.5
+week1I <- 3
+week1Method <- "Simulate" #Even/Multinomial/Simulate
+reporting <- "Exact" #Exact/Random
+
+incidenceOutput <- generateIncidence(week1I, trueWeeklyR, wTrue, PoissonOrRound, week1Method, reporting, probReported, trueP)
+
+trueAgI <- incidenceOutput$weeklyI
+trueDisagI <- incidenceOutput$dailyI
+reportedWeeklyI <- incidenceOutput$reportedWeeklyI
+print(reportedWeeklyI)
+defaultM <- 1e3
+priorRShapeAndScale <- c(1,5)
+
+wAssumed1 <- siCalc(wContGamPar, 1, nWeeksForSI, divisionsPerP)
+wAssumed3 <- siCalc(wContGamPar, 3, nWeeksForSI, divisionsPerP)
+wAssumed7 <- siCalc(wContGamPar, 7, nWeeksForSI, divisionsPerP)
+wAssumed14 <- siCalc(wContGamPar, 14, nWeeksForSI, divisionsPerP)
+wAssumed50 <- siCalc(wContGamPar, 50, nWeeksForSI, divisionsPerP)
+
+# start <- Sys.time()
+# profvis(inferUnderRepR(reportedWeeklyI, wAssumed50, priorRShapeAndScale, probReported, 1e4, 50))
+# end <- Sys.time()
+# 
+# elapsed <- end-start
+# print(elapsed)
+```
+
+```{r analysisNew, eval = FALSE}
+
+
+outputP1M1e3 <- inferUnderRepR(reportedWeeklyI, wAssumed1, priorRShapeAndScale, probReported, defaultM, 1)
+outputP3M1e3 <- inferUnderRepR(reportedWeeklyI, wAssumed3, priorRShapeAndScale, probReported, defaultM, 3)
+outputP7M1e3 <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, defaultM, 7)
+outputP14M1e3 <- inferUnderRepR(reportedWeeklyI, wAssumed14, priorRShapeAndScale, probReported, defaultM, 14)
+outputP50M1e3 <- inferUnderRepR(reportedWeeklyI, wAssumed50, priorRShapeAndScale, probReported, defaultM, 50)
+
+outputP7M5e1 <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 5e1, defaultP)
+outputP7M2e2 <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 2e2, defaultP)
+outputP7M1e4 <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 1e4, defaultP)
+outputP7M1e5 <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 1e5, defaultP)
+
+# Creating means, lower bounds, and upper bounds for each model
+
+save(outputP1M1e3, outputP3M1e3, outputP7M1e3, outputP14M1e3, outputP50M1e3, outputP7M5e1, outputP7M2e2, outputP7M1e4, outputP7M1e5, file = "inference.RData")
+
+
+```
+
+```{r analysisRepeat, eval = FALSE}
+
+nRepeats <- 30
+
+upperCriP7M1e3 <- matrix(NA, nrow = nRepeats, ncol = 10)
+upperCriP7M1e4 <- matrix(NA, nrow = nRepeats, ncol = 10)
+upperCriP7M1e5 <- matrix(NA, nrow = nRepeats, ncol = 10)
+
+lowerCriP7M1e3 <- matrix(NA, nrow = nRepeats, ncol = 10)
+lowerCriP7M1e4 <- matrix(NA, nrow = nRepeats, ncol = 10)
+lowerCriP7M1e5 <- matrix(NA, nrow = nRepeats, ncol = 10)
+
+meansP7M1e3 <- matrix(NA, nrow = nRepeats, ncol = 10)
+meansP7M1e4 <- matrix(NA, nrow = nRepeats, ncol = 10)
+meansP7M1e5 <- matrix(NA, nrow = nRepeats, ncol = 10)
+
+for (i in 1:nRepeats){
+
+  print(i)
+  
+set.seed(i)
+outputP7M1e3Tmp <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 1e3, defaultP)
+outputP7M1e4Tmp <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 1e4, defaultP)
+outputP7M1e5Tmp <- inferUnderRepR(reportedWeeklyI, wAssumed7, priorRShapeAndScale, probReported, 1e5, defaultP)
+
+upperCriP7M1e3[i, ] <- outputP7M1e3Tmp$cri[,2]
+upperCriP7M1e4[i, ] <- outputP7M1e4Tmp$cri[,2]
+upperCriP7M1e5[i, ] <- outputP7M1e4Tmp$cri[,2]
+
+lowerCriP7M1e3[i, ] <- outputP7M1e3Tmp$cri[,1]
+lowerCriP7M1e4[i, ] <- outputP7M1e4Tmp$cri[,1]
+lowerCriP7M1e5[i, ] <- outputP7M1e5Tmp$cri[,1]
+
+meansP7M1e3[i, ] <- outputP7M1e3Tmp$means
+meansP7M1e4[i, ] <- outputP7M1e4Tmp$means
+meansP7M1e5[i, ] <- outputP7M1e5Tmp$means
+
+}
+save(upperCriP7M1e3, upperCriP7M1e4, upperCriP7M1e5, lowerCriP7M1e3, lowerCriP7M1e4, lowerCriP7M1e5, meansP7M1e3, meansP7M1e4, meansP7M1e5, file = "inferenceRepeat.RData")
+
+```
+
+```{r analysis2, eval = TRUE}
+
+load("inference.RData")
+load("inferenceRepeat.RData")
+juliaInference <- read.csv("weightedM1e3ComparewithR.csv")
+
+mean_values_vary_P <- c(outputP1M1e3$means, outputP3M1e3$means, outputP7M1e3$means, outputP14M1e3$means, outputP50M1e3$means)
+lower_bounds_vary_P <- c(outputP1M1e3$cri[, 1], outputP3M1e3$cri[, 1], outputP7M1e3$cri[, 1], outputP14M1e3$cri[, 1], outputP50M1e3$cri[, 1])
+upper_bounds_vary_P <- c(outputP1M1e3$cri[, 2], outputP3M1e3$cri[, 2], outputP7M1e3$cri[, 2], outputP14M1e3$cri[, 2], outputP50M1e3$cri[, 2])
+
+mean_values_vary_M <- c(outputP7M1e3$means, outputP7M1e4$means, outputP7M1e5$means)
+lower_bounds_vary_M <- c(outputP7M1e3$cri[, 1], outputP7M1e4$cri[, 1], outputP7M1e5$cri[, 1])
+upper_bounds_vary_M <- c(outputP7M1e3$cri[, 2], outputP7M1e4$cri[, 2], outputP7M1e5$cri[, 2])
+
+mean_values_repeat <- cbind(cbind(meansP7M1e3, meansP7M1e4), meansP7M1e5)
+var_values_repeat <- varianceCalc(mean_values_repeat)
+mean_values_repeat <- colSums(mean_values_repeat)/nrow(mean_values_repeat)
+
+
+
+model_names_vary_P <- c("P=1", "P=3", "P=7", "P=14", "P=50")
+model_names_vary_M <- c("M=1,000", "M=10,000", "M=100,000")
+
+df_vary_P <- data.frame(
+  model = rep(model_names_vary_P, each = 10),
+  time = rep(seq(1,10), times = length(model_names_vary_P)),
+  mean_value = mean_values_vary_P,
+  lower_bound = lower_bounds_vary_P,
+  upper_bound = upper_bounds_vary_P
+)
+
+df_vary_M <- data.frame(
+  model = rep(model_names_vary_M, each = 10),
+  time = rep(seq(1,10), times = length(model_names_vary_M)),
+  mean_value = mean_values_vary_M,
+  lower_bound = lower_bounds_vary_M,
+  upper_bound = upper_bounds_vary_M
+)
+
+df_repeat <- data.frame(
+  model = rep(model_names_vary_M, each = 10),
+  time = rep(seq(1,10), times = length(model_names_vary_M)),
+  mean_value = mean_values_repeat,
+  lower_bound = mean_values_repeat - 1.96*sqrt(var_values_repeat),
+  upper_bound = mean_values_repeat + 1.96*sqrt(var_values_repeat)
+)
+
+# Viewing the first few rows of the data frame
+head(df)
+
+df_truth = data.frame(model = "truth", time = rep(seq(1, 10), times = length(model_names_vary_P)),
+                     Rt=rep(c(1.5, 0.75), each=5))
+
+# Plotting using ggplot2
+ggplot(df_vary_P, aes(x = time, y = mean_value, color = model)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower_bound, ymax = upper_bound, fill = model), alpha = 0.2, linewidth = 0) +
+  geom_errorbar(aes(x=time, ymin=lower_bound, ymax=upper_bound, color=model), width=0.3)+
+  geom_line(aes(x=time,y=Rt), data=df_truth, color = "black", linetype = 2)+
+  labs(title = "Rt inference with Credible Intervals for different P (M=1000)", x = "Time", y = "Mean Value") +
+  theme_minimal()
+
+ggplot(df_vary_M, aes(x = time, y = mean_value, color = model)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower_bound, ymax = upper_bound, fill = model), alpha = 0.2, linewidth = 0) +
+  geom_errorbar(aes(x=time, ymin=lower_bound, ymax=upper_bound, color=model), width=0.3)+
+  geom_line(aes(x=time,y=Rt), data=df_truth, color = "black", linetype = 2)+
+  labs(title = "Rt inference with Credible Intervals for different M (P=7)", x = "Time", y = "Mean Value") +
+  theme_minimal()
+
+#varianceCalc(lowerCriP7M1e5) and others gives the variance of the lower,upper and mean estimates for a batch of 30 inferences for different values of M with P=7.
+
+ggplot(df_repeat, aes(x = time, y = mean_value, color = model)) +
+  geom_line() +
+  geom_errorbar(aes(x=time, ymin=lower_bound, ymax=upper_bound, color=model), width=0.3)+
+  labs(title = "Investigating varaition between inferences with same epidemics.", x = "Time", y = "Mean Value") +
+  theme_minimal()
+
+```
+#Discussion with Ed
+- Fig 1:
+  + increasing P seems to improve estimation
+  + repeat over N simulations to show it is not a fluke?
+  + comparison with Nic's results look good. Improved inference using Bayes' for week 2 inference
+- Fig 2:
+  + how can we determine whether or not the estimates are stable with M? Seems more important to discuss this now than before.
+  + what level of variation is acceptable?
+  + is there something other than number of acceptances that would be more suitable?
+- Fig 3:
+  + Can we look at (as done in this figure) 30 repetitions of the same inference and evaluate how robust it is?
+  
+- what simulations can be run before Friday?
+  + simulate a range (1000) of epidemics with Rt = (1.5 1.5 1.5 ... 0.75 0.75 0.75)
+  + look at error and speed statistics 
+  + Julia code - go through with any suggestions?
+  + look at algorithm again?
+
+## Queries/Problems to solve
+
+-   Methodology: Initial mapping of cases to true incidence in week 1?
+-   Bug?: Why is it not recovering $R_t=1$ well?
+-   Methodology: Do we need to set a likelihood limit?
+-   Methodology: select daily incidence from weeks $1$ to $t-1$ proportional to likelihood?
+-   Methodology: Use effective sample size? (Nic's idea)
+-   Observation: Mean is nto centred in credible interval. Highly skewed.
+
+## Extensions?
+
+-   Replace Binomial likelihood with Beta-Binomial likelihood to incorporate uncertainty in under-reporting.
+    -   To do this, we need to know the probability distribution corresponding to an infection being reported.
+    -   Unit probability is described by $p \sim \mathrm{Beta}(\alpha, \beta)$
+
+
+```{r juliaCode1, eval = TRUE}
+
+#How do credible intervals change for a single simulation as we increase M (up to 1000)? SKIP
+
+library(ggplot2)
+
+inferenceStats <- read.csv("weightedM1e3.csv")
+
+rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e3Take2.csv")
+
+rPosteriorAndLikelihood$week <- as.factor(rep(2:10, each = 1000))
+
+barplot(inferenceStats$reportedWeeklyI)
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = meanTemp, color = week))+geom_line()
+plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = criLowTemp, color = week))+geom_line()
+plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = criUpTemp, color = week))+geom_line()
+plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = criUpTemp-criLowTemp, color = week))+geom_line()
+plot
+
+
+#Plot1:
+
+```
+
+```{r juliaCode2, eval = TRUE}
+
+#How do credible intervals change for a single simulation as we increase M (up to 10,000)?
+
+library(ggplot2)
+
+inferenceStats <- read.csv("weightedM1e4.csv")
+
+rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e4Take2.csv")
+
+rPosteriorAndLikelihood$week <- as.factor(rep(2:10, each = 10000))
+
+# plot<- ggplot(rPosteriorAndLikelihood, aes(x = week, y = rPosterior, weight = likelihood)) + geom_violin() +ylim(0,6)
+# plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = meanTemp, color = week))+geom_line()
+plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = criLowTemp, color = week))+geom_line()
+plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = criUpTemp, color = week))+geom_line()
+plot
+
+plot <- ggplot(rPosteriorAndLikelihood, aes(x = acceptance, y = criUpTemp-criLowTemp, color = week))+geom_line()
+plot
+
+# rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e4.csv")
+# 
+# plot<- ggplot(rPosteriorAndLikelihood, aes(x = week, y = rPosterior, weight = likelihood)) + geom_violin() + ylim(0,6)
+# plot
+
+
+```
+
+```{r juliaViolinComp, eval = TRUE}
+
+#How do Rt posterior distributions compare for each time point? Violins
+
+rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e3Take2.csv")
+rPosteriorAndLikelihood$week <- as.factor(rep(2:10, each = 1000))
+plot<- ggplot(rPosteriorAndLikelihood, aes(x = week, y = rPosterior, weight = likelihood)) + geom_violin() +ylim(-1,7)
+plot
+
+rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e4Take2.csv")
+rPosteriorAndLikelihood$week <- as.factor(rep(2:10, each = 10000))
+plot<- ggplot(rPosteriorAndLikelihood, aes(x = week, y = rPosterior, weight = likelihood)) + geom_violin()+
+  ylim(-1,7)
+plot
+
+```
+
+```{r juliaBWComp1, eval = TRUE}
+
+#How do Rt posterior distributions compare for each time point? BW plots
+
+rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e3Take2.csv")
+rPosteriorAndLikelihood$week <- as.factor(rep(2:10, each = 1000))
+plot<- ggplot(rPosteriorAndLikelihood, aes(x = week, y = rPosterior, weight = likelihood)) + geom_boxplot() +ylim(0,6)
+plot
+
+rPosteriorAndLikelihood <- read.csv("rPosteriorAndLikelihoodM1e4Take2.csv")
+rPosteriorAndLikelihood$week <- as.factor(rep(2:10, each = 10000))
+plot<- ggplot(rPosteriorAndLikelihood, aes(x = week, y = rPosterior, weight = likelihood)) + geom_boxplot()+
+ylim(0,6)
+plot
+
+```
+
+```{r juliaCode3, eval = TRUE}
+
+#Over many simulations, how does Rt inference fair?
+
+library(ggplot2)
+
+inferenceStats <- read.csv("rPosteriorAndLikelihoodSim1e3M1e4.csv")
+inferenceStats$week <- as.factor(rep(1:10, 1000))
+dfCustom <- data.frame(week = 1:10, trueR = c(rep(1.5, 5), rep(0.75, 5)))
+
+plot <- ggplot(data = inferenceStats, aes(x = week, y = meanRt))+
+  geom_violin()+
+  stat_summary(fun = "mean",
+               geom = "crossbar", 
+               width = 0.5,
+               colour = "red")+
+  geom_line(data = dfCustom, aes(x = week, y = trueR))
+plot
+
+trueRt <- rep(c(rep(1.5, 5), rep(0.75, 5)), 1000)
+
+coverage <- ((inferenceStats$lowerRt<=trueRt) & (inferenceStats$upperRt>=trueRt))
+
+coverageMatrix <- matrix(coverage, nrow = 10)
+coveragePercent <- 100*rowSums(coverageMatrix)/1000
+dfCustom$coveragePercent <- coveragePercent
+
+plot <- ggplot(data = dfCustom, aes(x = week, y = coveragePercent))+geom_line()
+plot
+
+print(mean(coveragePercent[2:10]))
+
+plot <- ggplot(inferenceStats, aes(x = reportedIncidence, y = totalIterations))+
+  geom_point()
+plot
+
+plot <- ggplot(inferenceStats, aes(x = meanRt, y = runTime))+
+  geom_point()
+plot
+
+
+```
+
+Going forward:
+
+- Do we need to consider a different metric to satisfy convergence (other than M?)
+  + perhaps we can already be satisfied?
+  + doing so will inevitably slow code down as we need to re-size vectors
+  + Julia could be good at this owing to resizeable Array types
+  
+- What questions would a reader be interested in?
+  + how good is accuracy and coverage?
+  + how can we have an estimate of under-reporting in the first place?
+  + how does inference change as we change rho?
+  + how important is rho mis-specification?
+  
