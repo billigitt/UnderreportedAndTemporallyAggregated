@@ -21,5 +21,12 @@ For sections 2 and 3, we expect there to be a nuance between two factors. In gen
 We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true Rt values are sampled from the gamma distribution that informs our prior.
 
 
-![Alt Text](figs/exampleSimulationIncidenceFull.png)
+![example simulation all incidence](figs/exampleSimulationIncidenceFull.png)
+![example simulation final 10 weeks](figs/exampleSimulationIncidenceLast10.png)
+![epiestim imperfect info against ours](figs/OursVsEEImperfectInfo.png)
+![epiestim perfect info against ours](figs/OursVsEEPerfectInfo.png)
+![robustness check](figs/robustnessCheck.png)
+![relative error 6000 sims](figs/relativeError6000Sims.png)
+![relative error 6000 sims against rho](figs/relativeError6000SimsVsRho.png)
+![coverage 6000 simulations](figs/coverage6000Sims.png)
 
