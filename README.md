@@ -112,6 +112,7 @@ Message for Fig 11: For the plausible range of $\rho$ values (0.33-0.83), we see
 Message for Fig 12: Along with the statistic that 94.8% of all credible intervals correctly contained the true reproduction number, this figure demonstrates that the coverage is also fairly consistent.
 
 The following results demonstrate that there are conflicting outcomes when we set up an experiment with fixed reported incidence, and vary $\rho$.
+
 ![width of cri can decrease with rho](figs/widthOfCrediblesDecreaseWithRho.png)
 
 *Fig 13: Inferences for two different $\rho$ values. Smaller $\rho$ gives wider credible intervals*
