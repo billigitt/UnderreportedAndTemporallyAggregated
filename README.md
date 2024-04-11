@@ -50,37 +50,46 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
 
 ![example simulation all incidence](figs/exampleSimulationIncidenceFull.png)
+
 *Fig 1: Example simulation with $\rho = 0.4$*
 
 ![example simulation final 10 weeks](figs/exampleSimulationIncidenceLast10.png)
+
 *Fig 2: Same example simulation with $\rho = 0.4$*
 
 ![epiestim imperfect info against ours](figs/OursVsEEImperfectInfo.png)
+
 *Fig 3: Comparison of inference for simulation method vs Epi-Estim*
 
 ![epiestim perfect info against ours](figs/OursVsEEPerfectInfo.png)
+
 *Fig 4: Comparison of inference for simulation method vs Epi-Estim (with perfect information)*
 
 ![robustness check](figs/robustnessCheckMean.png)
+
 *Fig 5: Robustness check 1. Inference of same epidemic 30 different times for different values of M (and EpiEstim with perfect and imperfect information)*
 Message for Fig 5: As $M$ increases, the mean estimate becomes more robust. We suggest $M = 10^5$ for the remainder of the study. Possibly reference this in main text but show analysis in appendix.
 
 ![robustness check](figs/robustnessCheckUpper.png)
+
 *Fig 6: Robustness check 2. Inference of same epidemic 30 different times for different values of M (and EpiEstim with perfect and imperfect information)*
 Message for Fig 6: As $M$ increases, the upper percentile estimate becomes more robust. 
 
 ![robustness check](figs/robustnessCheckLower.png)
+
 *Fig 7: Robustness check 3. Inference of same epidemic 30 different times for different values of M (and EpiEstim with perfect and imperfect information)*
 Message for Fig 7: As $M$ increases, the lower percentile estimate becomes more robust. 
 
 ![relative error 6000 sims](figs/relativeError6000Sims.png)
+
 *Fig 8: Relative error distribution over 6000 simulations*
 Message for Fig 8: Over a wide range of epidemics and a broad spectrum of reporting rates, we find that the relative error distribution to take the following form, with mean value 19.8%.
 NB: Do we need to qualify this somehow? Is 19.8% good or not? We can also investigate whether there is systematic over-estimation/under-estimation but this will probably be an artifact of what the true $R_t$ and serial intervals are. Perhaps, we simply state what the error is and then look at the coverage to indicate that the method works.
 
 ![relative error 6000 sims VS Naive EpiEstim](figs/relativeError6000SimsVsNaiveEpiEstim.png)
+
 *Fig 9:  Relative error distribution over 6000 simulations vs Naive EE*
-Message for Fig 9: Same message as Figure 8 but manages to qualify the result. 25.8% is the mean error for Naive approach. This could replace Fig 8 if we want to compare our estimate and substantiate our claim more clearly. We also find that in 68% of inferences points, our method was more accurate.
+Message for Fig 9: Same message as Figure 8 but manages to qualify the result. 25.8% is the mean error for Naive approach. This could replace Fig 8 if we want to compare our estimate and substantiate our claim more clearly. We also find that in 68% of inferences points, our method was more accurate than Naive EpiEstim.
 NB: This motivates our approach over a straightforward Epi-Estim approach very clearly.
 NB: EpiEstim in R only computes from Week 3 onwards so we need to fix this.
 NB: We could also show that EpiEstim gives incorrect coverage.
@@ -88,23 +97,28 @@ NB: We could also show that EpiEstim gives incorrect coverage.
 ## Section 2
 
 ![relative error 6000 sims against rho](figs/relativeError6000SimsVsRho.png)
+
 *Fig 10: Comparison of inference for simulation method when different true values of rho are modelled*
-Message for Fig 10: For the plausible range of $\rho$ values (0.33-0.83), we see that the error decreases as we reporting rates get higher. This message can be used to motivate higher recording rates in epidemics. [I think this happens because coefficient of variation decreases as you increase $/rho$ (extreme example is 0 CoV in true incidence when $\rho=1$)]
+Message for Fig 10: For the plausible range of $\rho$ values (0.33-0.83), we see that the error decreases as we reporting rates get higher. This message can be used to motivate higher recording rates in epidemics. [I think this happens because coefficient of variation decreases as you increase $\rho$ (extreme example is 0 CoV in true incidence when $\rho=1$)]
 
 ![relative error 6000 sims against rho](figs/credibleInterval6000SimsVsRho.png)
+
 *Fig 11: Comparison of inference for simulation method when different true values of rho are modelled*
-Message for Fig 11: For the plausible range of $\rho$ values (0.33-0.83), we see that the credible interval width decreases as we reporting rates get higher. This message can be used to motivate higher recording rates in epidemics. [I think this happens because coefficient of variation decreases as you increase $/rho$ (extreme example is 0 CoV in true incidence when $\rho=1$)]
+Message for Fig 11: For the plausible range of $\rho$ values (0.33-0.83), we see that the credible interval width decreases as we reporting rates get higher. This message can be used to motivate higher recording rates in epidemics. [I think this happens because coefficient of variation decreases as you increase $\rho$ (extreme example is 0 CoV in true incidence when $\rho=1$)]
 
 ![coverage 6000 simulations](figs/coverage6000Sims.png)
+
 *Fig 12: Looking at coverage for over many statistics*
 Message for Fig 12: Along with the statistic that 94.8% of all credible intervals correctly contained the true reproduction number, this figure demonstrates that the coverage is also fairly consistent.
 
 The following results demonstrate that there are conflicting outcomes when we set up an experiment with fixed reported incidence, and vary $\rho$.
 ![width of cri can decrease with rho](figs/widthOfCrediblesDecreaseWithRho.png)
+
 *Fig 13: Inferences for two different $\rho$ values. Smaller $\rho$ gives wider credible intervals*
 Message for Fig 13:
 
 ![width of cri can increase with rho](figs/widthOfCrediblesIncreaseWithRho.png)
+
 *Fig 14: Inferences for six different $\rho$ values. Smaller $\rho$ gives narrower credible intervals*
 Message for Fig 14:
 
