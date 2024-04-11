@@ -123,6 +123,118 @@ function inferUnderRepAndTempAggRStableCrI(weeklyRepI, w, priorRShapeScale, rho,
 
 end
 
+function inferUnderRepAndTempAggRNaive(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, criCheck)
+
+    #remove criCheck?
+        totalWeeks = length(weeklyRepI)
+        lengthSerial = length(w)
+    
+        #pre-allocation
+        storedI = zeros(Int, P*totalWeeks, M)
+        storedITimet = storedI
+        sampleI = zeros(Int, P*totalWeeks, maxIter)
+        likelihood = ones(totalWeeks, M)
+        rPosterior = ones(totalWeeks, M)
+    
+        runTime = zeros(totalWeeks)
+        totalIterations = zeros(totalWeeks)
+        criTemp = fill(NaN, totalWeeks, M, 2)
+        meanTemp = fill(NaN, totalWeeks, M)
+    
+        for t in 2:totalWeeks
+    
+            # re-set acceptance and iteration counts
+            st_time = time_ns()
+            acc = 0
+            iter = 1
+            k = 1
+    
+            # as Nic suggests, faster to do this sampling in one go
+            if (t >= 3)
+    
+                sampleIdx = sample(1:M, Weights(likelihood[t-1, :]), maxIter, replace = true)
+                sampleI = storedI[:, sampleIdx]
+    
+            elseif (t == 2)
+    
+                weeklyI1 = Int(weeklyRepI[1])
+                sampleI[1:P, :] = generateMultinomialSamples(fill(Int(round(weeklyRepI[1]/rho)), maxIter), P)
+    
+            end
+    
+            #sampling R in one go is a good idea regardless of t
+            sampleR = rand(Gamma(priorRShapeScale[1], priorRShapeScale[2]), maxIter)
+    
+    
+            while (acc < M)
+    
+                # take samples of incidence and reproduction number
+                simI = sampleI[:, iter]
+                simR = sampleR[iter]
+                for j in 1:P
+    
+                    timeConsidered = min((t - 1) * P + j - 1, lengthSerial)
+    
+                    infectiousPressure = sum(simI[((t - 1) * P + j - 1):-1:((t - 1) * P + j - timeConsidered)] .* w[1:timeConsidered])
+    
+                    simI[(t-1)*P+j] = rand(Poisson(infectiousPressure*simR))
+    
+                end
+    
+                weeklySimI = sum(simI[((t-1)*P+1):(t*P)])
+    
+                likelihoodTmp = pdf.(Binomial.(weeklySimI, rho), weeklyRepI[t])
+    
+                if (likelihoodTmp > 0)
+    
+                    acc += 1
+                    likelihood[t, acc] = likelihoodTmp
+                    rPosterior[t, acc] = simR
+                    storedITimet[:, acc] = simI
+    
+                    # if (criCheck == true) & (acc>1) & (sum(likelihood[t, 1:acc])> 1)
+    
+                    #     #criTemp is the credible interval calculated for each iteration
+                    #     criTemp[t, acc, 1] = quantile(rPosterior[t, 1:acc], Weights(likelihood[t, 1:acc]), 0.025)
+                    #     criTemp[t, acc, 2] = quantile(rPosterior[t, 1:acc], Weights(likelihood[t, 1:acc]), 0.975)
+                    #     meanTemp[t, acc] = sum(rPosterior[t, 1:acc] .* likelihood[t, 1:acc]) ./ sum(likelihood[t, 1:acc])
+    
+                    # end
+    
+                end
+                
+                iter += 1
+    
+                if ((iter == maxIter) & (acc < M))
+    
+                    println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
+                
+                    iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                    k += 1
+    
+                end
+            end
+            storedI = storedITimet
+            stop_time = time_ns()
+            runTime[t] = (stop_time - st_time) / 1e9
+            totalIterations[t] = iter + (k - 1) * maxIter
+    
+        end
+    
+        #calculate summary statistics
+        means = sum(rPosterior .* likelihood, dims=2) ./ sum(likelihood, dims=2)
+        means[1] = NaN
+    
+        cri = fill(NaN, totalWeeks, 2)
+        for i in 2:totalWeeks
+            cri[i, 1] = quantile(rPosterior[i, :], Weights(likelihood[i, :]), 0.025)
+            cri[i, 2] = quantile(rPosterior[i, :], Weights(likelihood[i, :]), 0.975)
+        end
+    
+        dictionary = Dict([("means", means), ("cri", cri), ("storedI", storedI), ("likelihood", likelihood), ("rPosterior", rPosterior), ("runTime", runTime), ("totalIterations", totalIterations), ("meanTemp", meanTemp), ("criTemp", criTemp)])
+    
+    end
+
 function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, criCheck)
 
 #remove criCheck?

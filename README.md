@@ -77,5 +77,21 @@ Message for Fig 10: For the plausible range of $\rho$ values (0.33-0.83), we see
 *Fig 11: Looking at coverage for over many statistics*
 Message for Fig 11: Along with the statistic that 94.8% of all credible intervals correctly contained the true reproduction number, this figure demonstrates that the coverage is consistent.
 
+The following results demonstrate that there are conflicting outcomes when we set up an experiment with fixed reported incidence, and vary $\rho$.
+![width of cri can decrease with rho](figs/widthOfCrediblesDecreaseWithRho.png)
+*Fig 11: Inferences for two different $\rho$ values. Smaller $\rho$ gives wider credible intervals*
+
+![width of cri can increase with rho](figs/widthOfCrediblesIncreaseWithRho.png)
+*Fig 11: Inferences for six different $\rho$ values. Smaller $\rho$ gives narrower credible intervals*
+
+We need to investigate why this happens. Argument Nic/Ed give is clear. Lower $\rho$ yields higher inferred true incidence, leading to higher certainty in $R_t$ inference. This argument breaks down if incidence is low.
+
+A: If recorded incidence is low and rho is low, true incidence has a large coefficient of variation, and true incidence is variable?
+B: If recorded incidence is low and rho is high, true incidence has a lower coefficient of variation, and true incidence is low.
+C: If recorded incidence is high, then regardless of rho, we know incidence has a small coefficient of variation, and true incidence is high.
+
+To get narrow credible intervals, we need both the true incidence to be high and to have a low coefficient of variation. This is satisfied in case C, and therefore only rho matters: lower rho leads to narrower credible intervals.
+
+But between case A and B, it is not clear which will lead to wider credible intervals. A gives large CoV giving wide cri but incidence is not necessarily high or low. B gives certainty that true incidence is low but the lower CoV means that may lead to narrower cri.
 
 

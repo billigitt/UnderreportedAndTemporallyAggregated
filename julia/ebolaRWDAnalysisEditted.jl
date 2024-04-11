@@ -6,7 +6,7 @@ using Debugger, JuliaInterpreter, Trapz, ProfileView, CSV, DataFrames, Tables, D
 
 include("juliaUnderRepFunctions.jl")
 
-df = CSV.read("evd_drc_2018-2020_daily.csv", DataFrame)
+df = CSV.read("CSVs/evd_drc_2018-2020_daily.csv", DataFrame)
 
 new_df = combine(groupby(df, :date_onset), :n => sum)
 sorted_df = sort(new_df, :date_onset)
@@ -27,7 +27,7 @@ long_df = sort(merged_df, :date_onset)
 
 final_df = long_df[142:512, :]
 
-weekly_vec = vec(sum(reshape(long_df.n_sum[1:714], 7, 102), dims =1))
+weekly_vec = vec(sum(reshape(final_df.n_sum, 7, 53), dims =1))
 
 T = length(weekly_vec)
 
@@ -36,8 +36,9 @@ wContGamPar = [2.71, 5.65/7] #https://royalsocietypublishing.org/doi/epdf/10.109
 divisionsPerP = Int(1e3)
 nWeeksForSI = 10
 
-probReported = 0.4 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
-# this 0.4 value is also corroborated in doi: 10.1371/journal.pntd.0006161 (Dalziel, unreported cases in Ebola)
+probReported = 0.33:0.1:0.83 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
+# this range of values are also corroborated in doi: 10.1371/journal.pntd.0006161 (Dalziel, unreported cases in Ebola)
+numProbsReported = length(probReported)
 defaultM = Int(1e5)
 maxIter = defaultM
 criCheck = true
@@ -45,30 +46,20 @@ criCheck = true
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
 priorRShapeAndScale = [1 5]
 
-x = inferUnderRepAndTempAggR(weekly_vec, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, criCheck)
 
-df1a = DataFrame(
-        week = 1:length(x["means"]),
-        date = long_df.date_onset[1:7:708],
-        meanRt = vec(x["means"]),
-        lowerRt = x["cri"][:, 1],
-        upperRt = x["cri"][:, 2],
-        totalIterations = x["totalIterations"],
-        runTime = x["runTime"],
-        reportedWeeklyI = weekly_vec
-)
-
-# df1b = DataFrame(
-#         week = repeat(2:T, inner=defaultM),
-#         likelihood = zeros(defaultM*(T-1)),
-#         rPosterior = zeros(defaultM*(T-1)),
-#         acceptance = repeat(1:defaultM, outer = T-1)
-# )
-
-# for k in 2:T
-#     df1b.likelihood[(k-2)*defaultM+1:(k-1)*defaultM] = x["likelihood"][k, :]
-#     df1b.rPosterior[(k-2)*defaultM+1:(k-1)*defaultM] = x["rPosterior"][k, :]
-# end
-
-CSV.write("realWorldInferenceEbolaEdittedM1e5.csv", df1a)
-# CSV.write("realWorldInferenceEbolaExtra.csv", df1b)
+for i in 1:numProbsReported
+        x = inferUnderRepAndTempAggR(weekly_vec, wAssumed, priorRShapeAndScale, probReported[i], defaultM, defaultP, maxIter, criCheck)
+    
+        df1a = DataFrame(
+            week = 1:length(x["means"]),
+            date = long_df.date_onset[142:7:(512-6)],
+            meanRt = vec(x["means"]),
+            lowerRt = x["cri"][:, 1],
+            upperRt = x["cri"][:, 2],
+            totalIterations = x["totalIterations"],
+            runTime = x["runTime"],
+            reportedWeeklyI = weekly_vec,
+        )
+    
+        CSV.write("realWorldInferenceEbolaRho" * string(i) * ".csv", df1a)
+    end
