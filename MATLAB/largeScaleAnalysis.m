@@ -62,6 +62,9 @@ ylabel('Percentage of inferences (%)')
 
 legend('Simulation Approach', 'Naive Epi-Estim', 'location', 'best')
 
+absoluteRelativeError2sRemoved = absoluteRelativeError;
+absoluteRelativeError2sRemoved(1:10:60000-9) = [];
+
 figure
 histogram(100*signedRelativeError, 'Normalization', 'probability')
 xticks(0:25:150)
@@ -96,6 +99,16 @@ ylabel('Error (%)')
 xlabel('$\rho$', 'interpreter', 'latex')
 
 
+figure
+boxchart(largeScaleStudyFinal.rho, (largeScaleStudyFinal.upperRt-largeScaleStudyFinal.lowerRt), 'BoxWidth', 0.05, 'MarkerStyle', 'none')
+
+xlim([0.26 0.9])
+ylim([0 10])
+xticks(0.33:0.1:0.83)
+
+ylabel('Credibleinterval width')
+xlabel('$\rho$', 'interpreter', 'latex')
+
 idxRho1 = reshape((0:60:(60000-60))+(1:10)', [], 1);
 idxRho2 = reshape((10:60:(60000-50))+(1:10)', [], 1);
 idxRho3 = reshape((20:60:(60000-40))+(1:10)', [], 1);
@@ -104,4 +117,7 @@ idxRho5 = reshape((40:60:(60000-20))+(1:10)', [], 1);
 idxRho6 = reshape((50:60:(60000-10))+(1:10)', [], 1);
 
 figure
-scatter(largeScaleStudyFinal.reportedWeeklyI(idxRho1), 1./(absoluteRelativeError(idxRho1)).^0.3)
+scatter(largeScaleStudyFinal.reportedWeeklyI(idxRho1), absoluteRelativeError(idxRho1))
+hold on
+scatter(largeScaleStudyFinal.reportedWeeklyI(idxRho6), absoluteRelativeError(idxRho6))
+

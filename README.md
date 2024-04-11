@@ -5,7 +5,7 @@ output:
 ---
 # UnderreportedAndTemporallyAggregated
 
-This README file contains the current work and outline for our project on inferring thr instantaneous reproduction number whilst accounts for temporally aggregated and under-reported incidence data.
+This README.md file contains the current work and outline for our project on inferring the instantaneous reproduction number whilst accounts for temporally aggregated and under-reported incidence data.
 
 ## Terminology
 
@@ -16,17 +16,11 @@ $M$: Sample threshold in ABC algorithm
 
 ## Overview
 
-Our project is broken down into 3 main sections:
+Our project is broken down into 3 main sections (with main message in brackets):
 
-1. Demonstrate that inference works for typical value of under-reporting ($\rho=0.4$) for large value of $M = 10^3, 10^4, 10^5$. 
-2. Fixing the true incidence, and considering different reporting rates to generate the reported incidence. Investigate $R_t$ inference and see how results vary for different values of $\rho$.
-3. Finally using a real world data-set from an Ebola outbreak, investigate $R_t$ inference for different values of under-reporting.
-
-The message from each section should take roughly the following form:
-
-1. Inference works for a wide range of epidemics, with higher accuracy and precision when incidence is higher
-
-For sections 2 and 3, we expect there to be a nuance between two factors. In general, higher assumed true incidence will lead to higher levels of precision in reproduction number inference. But there may be some interaction between that and the value of under-reporting assumed.
+# 1. Simple single study and large study (fixing true incidence) to show inference works (lower errors than Naive EE, correct coverage, robust for $M=10^5$) 
+# 2. Same large study  but stratified by $\rho$ (improving reporting leads to greater confidence in $R_t$ inference wrt credible intervals and mean error)
+# 3. Real world data-set from an Ebola outbreak (in general, assuming higher $\rho$ leads to wider credible intervals)
 
 Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
@@ -40,17 +34,20 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 + We may need to qualify the significance of this distribution and the mean error. I have tried to do this by repeating the inference again but using a Naive Epi-Estim approach. DONE
 + Use real-world data-set to infer $R_t$ but now assuming different values of $\rho$. What does this do to $R_t$ inference (mean and credible intervals). DONE.
 
-Still to do:
+## Still to do:
+
+# Non-important?
 
 + Design and run an experiment that highlights the nuance between $\rho$ and incidence size in determining credible interval width.
 + Note that in the experiment for part 2, this nuance is unlikely to be picked up since roughly same true incidence will be inferred for that batch of results.
 
-SUGGESTION:
+## Manuscript draft
+
++ Skeleton paragraphs.
 
 ## Section 1. Checking incidence is accurate.
 
-We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true Rt values are sampled from the gamma distribution that informs our prior.
-
+We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
 
 ![example simulation all incidence](figs/exampleSimulationIncidenceFull.png)
 *Fig 1: Example simulation with $\rho = 0.4$*
@@ -66,7 +63,7 @@ We look at two case studies. Firstly, we look at a realistic outbreak. Secondly,
 
 ![robustness check](figs/robustnessCheckMean.png)
 *Fig 5: Robustness check 1. Inference of same epidemic 30 different times for different values of M (and EpiEstim with perfect and imperfect information)*
-Message for Fig 5: As $M$ increases, the mean estimate becomes more robust. 
+Message for Fig 5: As $M$ increases, the mean estimate becomes more robust. We suggest $M = 10^5$ for the remainder of the study. Possibly reference this in main text but show analysis in appendix.
 
 ![robustness check](figs/robustnessCheckUpper.png)
 *Fig 6: Robustness check 2. Inference of same epidemic 30 different times for different values of M (and EpiEstim with perfect and imperfect information)*
@@ -82,27 +79,36 @@ Message for Fig 8: Over a wide range of epidemics and a broad spectrum of report
 NB: Do we need to qualify this somehow? Is 19.8% good or not? We can also investigate whether there is systematic over-estimation/under-estimation but this will probably be an artifact of what the true $R_t$ and serial intervals are. Perhaps, we simply state what the error is and then look at the coverage to indicate that the method works.
 
 ![relative error 6000 sims VS Naive EpiEstim](figs/relativeError6000SimsVsNaiveEpiEstim.png)
-*Fig 9: Comparison of inference for simulation method vs Epi-Estim (with perfect information)*
-Message for Fig 9: Same message as Figure 8 but manages to qualify the result. 25.8% is the mean error for Naive approach.This could replace Fig 8 if we want to compare our estimate and substantiate our claim more clearly.
+*Fig 9:  Relative error distribution over 6000 simulations vs Naive EE*
+Message for Fig 9: Same message as Figure 8 but manages to qualify the result. 25.8% is the mean error for Naive approach. This could replace Fig 8 if we want to compare our estimate and substantiate our claim more clearly. We also find that in 68% of inferences points, our method was more accurate.
+NB: This motivates our approach over a straightforward Epi-Estim approach very clearly.
+NB: EpiEstim in R only computes from Week 3 onwards so we need to fix this.
+NB: We could also show that EpiEstim gives incorrect coverage.
+
+## Section 2
 
 ![relative error 6000 sims against rho](figs/relativeError6000SimsVsRho.png)
 *Fig 10: Comparison of inference for simulation method when different true values of rho are modelled*
 Message for Fig 10: For the plausible range of $\rho$ values (0.33-0.83), we see that the error decreases as we reporting rates get higher. This message can be used to motivate higher recording rates in epidemics. [I think this happens because coefficient of variation decreases as you increase $/rho$ (extreme example is 0 CoV in true incidence when $\rho=1$)]
 
+![relative error 6000 sims against rho](figs/credibleInterval6000SimsVsRho.png)
+*Fig 11: Comparison of inference for simulation method when different true values of rho are modelled*
+Message for Fig 11: For the plausible range of $\rho$ values (0.33-0.83), we see that the credible interval width decreases as we reporting rates get higher. This message can be used to motivate higher recording rates in epidemics. [I think this happens because coefficient of variation decreases as you increase $/rho$ (extreme example is 0 CoV in true incidence when $\rho=1$)]
+
 ![coverage 6000 simulations](figs/coverage6000Sims.png)
-*Fig 11: Looking at coverage for over many statistics*
-Message for Fig 11: Along with the statistic that 94.8% of all credible intervals correctly contained the true reproduction number, this figure demonstrates that the coverage is consistent.
+*Fig 12: Looking at coverage for over many statistics*
+Message for Fig 12: Along with the statistic that 94.8% of all credible intervals correctly contained the true reproduction number, this figure demonstrates that the coverage is also fairly consistent.
 
 The following results demonstrate that there are conflicting outcomes when we set up an experiment with fixed reported incidence, and vary $\rho$.
-
 ![width of cri can decrease with rho](figs/widthOfCrediblesDecreaseWithRho.png)
-*Fig 11: Inferences for two different $\rho$ values. Smaller $\rho$ gives wider credible intervals*
+*Fig 13: Inferences for two different $\rho$ values. Smaller $\rho$ gives wider credible intervals*
+Message for Fig 13:
 
 ![width of cri can increase with rho](figs/widthOfCrediblesIncreaseWithRho.png)
-*Fig 11: Inferences for six different $\rho$ values. Smaller $\rho$ gives narrower credible intervals*
+*Fig 14: Inferences for six different $\rho$ values. Smaller $\rho$ gives narrower credible intervals*
+Message for Fig 14:
 
-
-We need to investigate why this happens. Argument Nic/Ed give is clear. Lower $\rho$ yields higher inferred true incidence, leading to higher certainty in $R_t$ inference. This argument breaks down if incidence is low.
+We need to investigate why this happens. Argument Nic/Ed give is clear. Lower $\rho$ yields higher inferred true incidence, leading to higher certainty in $R_t$ inference. This argument may break down if incidence is low.
 
 A: If recorded incidence is low and rho is low, true incidence has a large coefficient of variation, and true incidence is variable?
 B: If recorded incidence is low and rho is high, true incidence has a lower coefficient of variation, and true incidence is low.
@@ -114,8 +120,8 @@ But between case A and B, it is not clear which will lead to wider credible inte
 
 Example: If recorded incidence is 0, and $\rho$ is low, then incidence can feasibly take a very wide range of values. If instead $\rho$ is high, then incidence can only feasibly take a few low values. This means, it is not straight forward as to which one will have the wider credible interval.
 
-Experiment Suggestion: infer $R_t$ with constant reported incidence. Repeat with different values of $\rho$ and with different values of constant incidence. Plot a graph of which value of $\rho$ gives widest and narrowest credible interval. Prediction: Smaller $\rho$ gives smaller credible intervals for large incidence, but perhaps opposite or intermeadiary effecr with low incidence (i.e. medium $\rho$ give smallest credible interval).
+Experiment Suggestion: infer $R_t$ with constant reported incidence. Repeat with different values of $\rho$ and with different values of constant incidence. Plot a graph of which value of $\rho$ gives widest and narrowest credible interval. Prediction: Smaller $\rho$ gives smaller credible intervals for large incidence, but perhaps opposite (or an intermediary effect) with low incidence (i.e. medium $\rho$ give smallest credible interval).
 
-Note: Coefficient of variation argument works in opposite ways (in times of $\rho$) depending on what you fix. If you fix true incidence in experiment, then coefficient of variation for inferred true incidence decreases as $\rho$ increases.
+Note: Variation argument works in opposite ways (in terms of $\rho$) depending on what you fix. If you fix true incidence in experiment, then variation for inferred true incidence decreases as $\rho$ increases (Take $\rho=1$ as extreme example)
 
-If instead you fix the reported incidence, then coefficient of variation for inferred true incidence increases as $\rho$ increases.
+If instead you fix the reported incidence, then coefficient of variation for inferred true incidence (usually) increases as $\rho$ increases- although there are excepts to this!

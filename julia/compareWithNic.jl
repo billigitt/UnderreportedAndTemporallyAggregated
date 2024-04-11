@@ -13,7 +13,9 @@ Random.seed!(6)
 trueP = 1008
 defaultP = 7
 
-
+wContGamPar = [4, 1/10.8] 
+nWeeksForSI = 10
+divisionsPerP = Int(1e2)
 
 wTrue = siCalcNew(wContGamPar, trueP, nWeeksForSI, divisionsPerP)
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
