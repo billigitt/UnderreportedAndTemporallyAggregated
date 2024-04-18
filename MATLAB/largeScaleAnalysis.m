@@ -176,8 +176,8 @@ subplot(3, 1, 3)
 
 plot(0.33:0.1:0.83, 100*coverageByRho)
 hold on
-yline(100*overallTotalCoverage)
 plot(0.33:0.1:0.83, 100*coverageEEByRho)
+yline(100*overallTotalCoverage)
 yline(100*overallNaiveEECoverage)
 xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
 ylabel('Coverage (%)')

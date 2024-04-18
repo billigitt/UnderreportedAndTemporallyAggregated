@@ -42,6 +42,9 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
   + Incidence generated a different way? Although now we have all simulated data-sets from same method (Gam(1,3) prior)
   + Entire Ebola data-set (took off 27 weeks)
   + Generating data with what value of P? Have assumed 7 so far.
++ Decide exactly on all the details of figures- colours, labels, etc. Suggest we iron these details out next meeting?
+
++ Start skeleton for manuscript?
 
 
 ## Section 1. Checking inference is accurate, approppriately covered(?) and robust.
@@ -68,7 +71,7 @@ Pending cluster computation. Idea: Reverse binomial sample (for each reported in
 
 ![fig4](figs/sectionEffectOfRho/increasingRhoIsGood.png)
 
-*Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals*
+*Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals. Also that credible interval width is the same for EE and how coverage also depends on reporting for EE but not for our method.*
 
 NB: We go back to simulated data here. Could this order be confusing for the reader? We have to decide between ordering sections by data-sets or ordering sections by principles of inference and then point about increasing $\rho$.
 
@@ -79,3 +82,4 @@ NB: We go back to simulated data here. Could this order be confusing for the rea
 *Fig 5: Same point as Fig 4 but with real world data.*
 
 NB: We do not do a large-scale study here and instead simulate reported incidence by choosing the most likely reporting given true incidence. This gives a simple, interpretable figure instead of re-running analyses to account for stochasticity.
+NB: Do we want to zoom in on figure to really show the effect? Could have these two and then zoom in from weeks 30-40 showing the same panels below these?
