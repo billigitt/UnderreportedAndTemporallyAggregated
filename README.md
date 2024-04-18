@@ -59,10 +59,10 @@ NB: 3rd subplot should be with fig 4?
 
 *Fig 3: Clear demo that our method is more robust, and motivates why we choose M=100,000 (SUPP)*
 
-![fig4](figs/sectionEffectOfRho/IncreasingRhoIsGood.png)
+![fig4](figs/sectionEffectOfRho/increasingRhoIsGood.png)
 
 *Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals*
 
-![fig5](figs/sectionRWD/widthOfCredibleIntervalsDecreaseWithRho.png)
+![fig5](figs/sectionRWD/widthOfCrediblesDecreaseWithRho.png)
 
 *Fig 5: Same point as Fig 4 but with real world data.*
