@@ -57,7 +57,7 @@ We look at two case studies. Firstly, we look at a realistic outbreak. Secondly,
 
 ![fig2](figs/sectionBasicInference/mainFigureBasicInference.png)
 
-*Fig 2: Large scale study showing our inference is both more precise and more accurate than EE. Mean errors are 19.8% vs 27.8% and mean coverages are *
+*Fig 2: Large scale study showing our inference is both more precise and more accurate than EE. Mean errors are 19.8% vs 27.8% and mean coverages are 94.7% vs 73.1%*
 
 ![fig3](figs/sectionRobustness/mainRobustness.png)
 
