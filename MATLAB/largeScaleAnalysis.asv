@@ -148,8 +148,6 @@ ylabel('Percentage of inferences (%)')
 
 
 figure
-
-subplot(2, 1, 1)
 boxchart(largeScaleStudyFinal.rho, 100*abs(largeScaleStudyFinal.meanRt-largeScaleStudyFinal.trueR)./largeScaleStudyFinal.trueR, 'BoxWidth', 0.05, 'MarkerStyle', 'none')
 
 xlim([0.26 0.9])
@@ -160,7 +158,7 @@ ylabel('Error (%)')
 xlabel('$\rho$', 'interpreter', 'latex')
 
 
-subplot(2, 1, 2)
+figure
 boxchart(largeScaleStudyFinal.rho, (largeScaleStudyFinal.upperRt-largeScaleStudyFinal.lowerRt), 'BoxWidth', 0.05, 'MarkerStyle', 'none')
 
 xlim([0.26 0.9])
@@ -169,6 +167,8 @@ xticks(0.33:0.1:0.83)
 
 ylabel('Credibleinterval width')
 xlabel('$\rho$', 'interpreter', 'latex')
+
+
 
 figure
 
@@ -188,7 +188,7 @@ scatter(infectiousPotential, absoluteRelativeError)
 set(gca,'yscale','log')
 
 figure
-subplot(2, 2, 1)
+subplot()
 histogram(100*absoluteRelativeError, 'Normalization', 'probability')
 hold on
 histogram(100*absoluteRelativeErrorNaiveEE, 'Normalization', 'probability')
@@ -204,7 +204,6 @@ xline(mean(absoluteRelativeError)*100, 'blue')
 
 legend('Simulation Approach', 'Naive Epi-Estim', 'location', 'best')
 
-subplot(2, 2, 2)
 
 histogram(coverageBySim, 'Normalization', 'probability')
 hold on
@@ -216,11 +215,9 @@ xticklabels({'60', '70', '80', '90', '100'})
 ylabel('Relative frequency (%)')
 xlabel('Credible interval coverage (%)')
 
-legend('Simulation Approach', 'Naive Epi-Estim')
+legend('Accounting for under-reporting', 'Naive Epi-Estim')
 
 % Fig to show that coverage  does not change with rho
-
-subplot(2,2,3)
 
 plot(0.33:0.1:0.83, coverageByRho)
 hold on

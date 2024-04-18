@@ -354,6 +354,95 @@ function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, ma
 
 end
 
+function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
+
+    #remove criCheck?
+        totalWeeks = length(weeklyRepI)
+        lengthSerial = length(w)
+    
+        #pre-allocation
+        storedI = zeros(Int, P*totalWeeks, M)
+        storedITimet = storedI
+        sampleI = zeros(Int, P*totalWeeks, maxIter)
+        rPosterior = ones(totalWeeks, M)
+    
+        runTime = zeros(totalWeeks)
+        totalIterations = zeros(totalWeeks)
+        meanTemp = fill(NaN, totalWeeks, M)
+    
+        for t in 2:totalWeeks
+    
+            # re-set acceptance and iteration counts
+            st_time = time_ns()
+            acc = 0
+            iter = 1
+            k = 1
+
+            sampling = reSampling(M, maxIter, P, storedI, weeklyRepI[1], t, priorRShapeScale, sampleI)
+            sampleI = sampling["sampleI"]
+            sampleR = sampling["sampleR"]
+    
+            while (acc < M)
+    
+                # take samples of incidence and reproduction number
+                simI = sampleI[:, iter]
+                simR = sampleR[iter]
+                for j in 1:P
+    
+                    timeConsidered = min((t - 1) * P + j - 1, lengthSerial)
+    
+                    infectiousPressure = sum(simI[((t - 1) * P + j - 1):-1:((t - 1) * P + j - timeConsidered)] .* w[1:timeConsidered])
+    
+                    simI[(t-1)*P+j] = rand(Poisson(infectiousPressure*simR))
+    
+                end
+    
+                weeklySimI = sum(simI[((t-1)*P+1):(t*P)])
+    
+                if (weeklySimI == weeklyRepI[t])
+    
+                    acc += 1
+                    rPosterior[t, acc] = simR
+                    storedITimet[:, acc] = simI
+
+                end
+                
+                iter += 1
+    
+                if ((iter == maxIter) & (acc < M))
+    
+                    println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
+                
+                    iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                    k += 1
+
+                    # Resampling = reSampling(M, maxIter, P, storedI, weeklyRepI[1], t, priorRShapeScale, sampleI)
+                    # sampleI = Resampling["sampleI"]
+                    # sampleR = Resampling["sampleR"]
+    
+                end
+            end
+            storedI = storedITimet
+            stop_time = time_ns()
+            runTime[t] = (stop_time - st_time) / 1e9
+            totalIterations[t] = iter + (k - 1) * maxIter
+    
+        end
+    
+        #calculate summary statistics
+        means = sum(rPosterior, dims=2)/M
+        means[1] = NaN
+    
+        cri = fill(NaN, totalWeeks, 2)
+        for i in 2:totalWeeks
+            cri[i, 1] = quantile(rPosterior[i, :], 0.025)
+            cri[i, 2] = quantile(rPosterior[i, :], 0.975)
+        end
+    
+        dictionary = Dict([("means", means), ("cri", cri), ("storedI", storedI), ("rPosterior", rPosterior), ("runTime", runTime), ("totalIterations", totalIterations), ("meanTemp", meanTemp)])
+    
+    end
+
 function inferUnderRepAndTempAggRcriCheck(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, criCheck)
 
     #remove criCheck?
@@ -518,6 +607,44 @@ function siCalcNew(siGamPar, P, numWeeksToIntegrate, divisionsPerP)
     for i in 1:(numWeeksToIntegrate * P)
         tmpIdx = ((i - 1) * divisionsPerP + 1):((i + 1) * divisionsPerP + 1)
         tmpDomain = totalDomain[tmpIdx]
+
+        wP[i] = trapz(tmpDomain, tentFunction(i, P, tmpDomain).*gamPdf(tmpDomain))
+    end
+
+    tmpIdx = (1 - divisionsPerP):(divisionsPerP + 1)
+    tmpDomain = LinRange(-1/P, 1/P, (2*divisionsPerP + 1))
+    wP[1] += trapz(tmpDomain, tentFunction(0, P, tmpDomain).*gamPdf(tmpDomain))
+
+    wP = wP ./ sum(wP)
+    
+ wP
+end
+
+function siCalcCori(meanAndStd, P, numWeeksToIntegrate, divisionsPerP)
+    
+    # the difference in this function is that we calculate the 0 day contribution separately and then add it
+    # to the 1 day contribution. We then normalize.
+    tol = 1e-3
+    
+    numSteps = Int((numWeeksToIntegrate*P + 1)*divisionsPerP + 1)
+    totalDomain = LinRange(0, numWeeksToIntegrate + (1 / P), numSteps)
+    
+    shape = ((meanAndStd[1]-1) / meanAndStd[2])^2
+    scale = meanAndStd[2]^2 / (meanAndStd[1]-1)
+
+    gamPdf(x) = pdf(Gamma(shape, scale), x)
+    
+    totalProb, err = quadgk(gamPdf, 0, Inf)
+    if abs(totalProb - 1) > tol
+        error("Error: The value is not close enough to 1.")
+    end
+    
+    wP = zeros(numWeeksToIntegrate * P)
+    
+    for i in 1:(numWeeksToIntegrate * P)
+        tmpIdx = ((i - 1) * divisionsPerP + 1):((i + 1) * divisionsPerP + 1)
+        tmpDomain = totalDomain[tmpIdx]
+
         wP[i] = trapz(tmpDomain, tentFunction(i, P, tmpDomain).*gamPdf(tmpDomain))
     end
 
@@ -701,4 +828,25 @@ function generateMultinomialSamples(input_vector::Vector{Int}, P::Int)
     end
     
     output_vector
+end
+
+function reSampling(M, maxIter, P, storedI, weeklyRepI1, t, priorRShapeScale, sampleI)
+
+    if (t >= 3)
+    
+        sampleIdx = sample(1:M, maxIter, replace = true)
+        sampleI = storedI[:, sampleIdx]
+
+    elseif (t == 2)
+
+        weeklyI1 = Int(weeklyRepI1)
+        sampleI[1:P, :] = generateMultinomialSamples(fill(weeklyI1, maxIter), P)
+
+    end
+
+    #sampling R in one go is a good idea regardless of t
+    sampleR = rand(Gamma(priorRShapeScale[1], priorRShapeScale[2]), maxIter)
+
+    return Dict("sampleI" => sampleI, "sampleR" => sampleR)
+
 end

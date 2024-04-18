@@ -49,27 +49,25 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
 We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
 
-![example simulation all incidence](figs/sectionBasicInference/standardPlot.png)
+![example simulation all incidence](figs/exampleSimulationIncidenceFull.png)
 
-*Fig 1: Single example that our inference is more accurate than EE*
+*Fig 1: Example simulation with $\rho = 0.4$*
 
-![example simulation final 10 weeks](figs/sectionBasicInference/mainFigureBasicInference.png)
+![example simulation final 10 weeks](figs/exampleSimulationIncidenceLast10.png)
 
-*Fig 2: Large scale study showing our inference is both more precise and more accurate than EE*
+*Fig 2: Same example simulation with $\rho = 0.4$*
 
-NB: 3rd subplot should be with fig 4?
+![epiestim imperfect info against ours](figs/OursVsEEImperfectInfo.png)
 
-![epiestim imperfect info against ours](figs/sectionRobustness/mainRobustness.png)
+*Fig 3: Comparison of inference for simulation method vs Epi-Estim*
 
-*Fig 3: Clear demo that our method is more robust, and motivates why we choose $M=100,000$ (SUPP)*
+![epiestim perfect info against ours](figs/OursVsEEPerfectInfo.png)
 
-![epiestim perfect info against ours](figs/sectionEffectOfRho/IncreasingRhoIsGood.png)
+*Fig 4: Comparison of inference for simulation method vs Epi-Estim (with perfect information)*
 
-*Fig 4: Demo that increasing $\rho$ leads to smaller errors and narrower credible intervals*
+![robustness check](figs/robustnessCheckMean.png)
 
-![robustness check](figs/sectionRWD/widthOfCredibleIntervalsDecreaseWithRho.png)
-
-*Fig 5: Same point as Fig 4 but with real world data.*
+*Fig 5: Robustness check 1. Inference of same epidemic 30 different times for different values of M (and EpiEstim with perfect and imperfect information)*
 Message for Fig 5: As $M$ increases, the mean estimate becomes more robust. We suggest $M = 10^5$ for the remainder of the study. Possibly reference this in main text but show analysis in appendix.
 
 ![robustness check](figs/robustnessCheckUpper.png)
