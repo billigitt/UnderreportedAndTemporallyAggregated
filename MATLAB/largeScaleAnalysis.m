@@ -149,26 +149,39 @@ ylabel('Percentage of inferences (%)')
 
 figure
 
-subplot(2, 1, 1)
+subplot(3, 1, 1)
 boxchart(largeScaleStudyFinal.rho, 100*abs(largeScaleStudyFinal.meanRt-largeScaleStudyFinal.trueR)./largeScaleStudyFinal.trueR, 'BoxWidth', 0.05, 'MarkerStyle', 'none')
-
+hold on
+boxchart(repmat(rhoToRepeat, 1000, 1), absoluteRelativeErrorNaiveEE*100, 'BoxWidth', 0.05, 'MarkerStyle', 'none')
 xlim([0.26 0.9])
 ylim([0 100])
 xticks(0.33:0.1:0.83)
 
 ylabel('Error (%)')
-xlabel('$\rho$', 'interpreter', 'latex')
+xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
 
 
-subplot(2, 1, 2)
+subplot(3, 1, 2)
 boxchart(largeScaleStudyFinal.rho, (largeScaleStudyFinal.upperRt-largeScaleStudyFinal.lowerRt), 'BoxWidth', 0.05, 'MarkerStyle', 'none')
-
+hold on
+boxchart(repmat(rhoToRepeat, 1000, 1), cisEE(:, 1) - cisEE(:, 2), 'BoxWidth', 0.05, 'MarkerStyle', 'none')
 xlim([0.26 0.9])
 ylim([0 10])
 xticks(0.33:0.1:0.83)
 
 ylabel('Credibleinterval width')
-xlabel('$\rho$', 'interpreter', 'latex')
+xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
+
+subplot(3, 1, 3)
+
+plot(0.33:0.1:0.83, coverageByRho)
+hold on
+yline(overallTotalCoverage)
+plot(0.33:0.1:0.83, coverageEEByRho)
+yline(overallNaiveEECoverage)
+xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
+ylabel('Coverage (%)')
+legend('Simulation Approach', 'Naive Epi-Estim')
 
 figure
 
@@ -188,7 +201,7 @@ scatter(infectiousPotential, absoluteRelativeError)
 set(gca,'yscale','log')
 
 figure
-subplot(2, 2, 1)
+subplot(1, 2, 1)
 histogram(100*absoluteRelativeError, 'Normalization', 'probability')
 hold on
 histogram(100*absoluteRelativeErrorNaiveEE, 'Normalization', 'probability')
@@ -202,17 +215,16 @@ ylabel('Percentage of inferences (%)')
 xline(mean(absoluteRelativeErrorNaiveEE)*100, 'red')
 xline(mean(absoluteRelativeError)*100, 'blue')
 
-legend('Simulation Approach', 'Naive Epi-Estim', 'location', 'best')
-
-subplot(2, 2, 2)
+subplot(1, 2, 2)
 
 histogram(coverageBySim, 'Normalization', 'probability')
 hold on
 histogram(coverageBySimNaiveEE, 'Normalization', 'probability')
-yticks(0.1:0.1:0.6)
-yticklabels({'10', '20', '30', '40', '50', '60'})
-xticks(6:10)
-xticklabels({'60', '70', '80', '90', '100'})
+yticks(0:0.1:0.6)
+yticklabels({'0', '10', '20', '30', '40', '50', '60'})
+
+xticks(1:10)
+xticklabels({'10', '20', '30', '40', '50', '60', '70', '80', '90', '100'})
 ylabel('Relative frequency (%)')
 xlabel('Credible interval coverage (%)')
 
@@ -220,12 +232,4 @@ legend('Simulation Approach', 'Naive Epi-Estim')
 
 % Fig to show that coverage  does not change with rho
 
-subplot(2,2,3)
-
-plot(0.33:0.1:0.83, coverageByRho)
-hold on
-yline(overallTotalCoverage)
-plot(0.33:0.1:0.83, coverageEEByRho)
-yline(overallNaiveEECoverage)
-xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
-ylabel('Coverage (%)')
+disp("Percentage of times that EE had smaller error than Simulation: "+num2str(100*sum(absoluteRelativeErrorNaiveEE<=absoluteRelativeError)/length(absoluteRelativeError)))
