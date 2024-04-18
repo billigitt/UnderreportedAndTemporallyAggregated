@@ -18,9 +18,10 @@ $M$: Sample threshold in ABC algorithm
 
 Our project is broken down into 3 main sections (with main message in brackets):
 
-# 1. Simple single study and large study (fixing true incidence) to show inference works (lower errors than Naive EE, correct coverage, robust for $M=10^5$) 
-# 2. Same large study  but stratified by $\rho$ (improving reporting leads to greater confidence in $R_t$ inference wrt credible intervals and mean error)
-# 3. Real world data-set from an Ebola outbreak (in general, assuming higher $\rho$ leads to wider credible intervals)
+# 1. Simple single study and large study (fixing true incidence) to show inference works (lower errors than Naive EE, correct coverage, robust for $M=10^5$)
+# 2. Real world data set demonstrating that our method is a faster, more practical way of achieving desired inference.
+# 3. Same large study  but stratified by $\rho$ (improving reporting leads to greater confidence in $R_t$ inference wrt credible intervals and mean error)
+# 4. Real world data-set from an Ebola outbreak (showing that higher $\rho$ leads to narrower credible intervals but with RWD)
 
 Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
@@ -33,15 +34,17 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 + We may need to qualify the significance of this distribution and the mean error. I have tried to do this by repeating the inference again but using a Naive Epi-Estim approach. DONE
 + Use real-world data-set to infer $R_t$ but now assuming different values of $\rho$. What does this do to $R_t$ inference (mean and credible intervals). DONE.
 
-## Still to do:
+## Still to do (analysis):
 
 + Comparing our method with long-way of computing Rt. Currently running on cluster.
++ Re-run analyses for
+  + $\rho = 0.3-0.9$?
+  + Incidence generated a different way? Although now we have all simulated data-sets from same method (Gam(1,3) prior)
+  + Entire Ebola data-set (took off 27 weeks)
+  + Generating data with what value of P? Have assumed 7 so far.
 
-## Manuscript draft
 
-+ Skeleton paragraphs.
-
-## Section 1. Checking inference is accurate, precise and robust.
+## Section 1. Checking inference is accurate, approppriately covered(?) and robust.
 
 We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
 
@@ -51,7 +54,7 @@ We look at two case studies. Firstly, we look at a realistic outbreak. Secondly,
 
 ![fig2](figs/sectionBasicInference/mainFigureBasicInference.png)
 
-*Fig 2: Large scale study showing our inference is both more precise and more accurate than EE*
+*Fig 2: Large scale study showing our inference is both more precise and more accurate than EE. Mean errors are 19.8% vs 27.8% and mean coverages are *
 
 ![fig3](figs/sectionRobustness/mainRobustness.png)
 
@@ -59,13 +62,15 @@ We look at two case studies. Firstly, we look at a realistic outbreak. Secondly,
 
 ## Section 2. Inference is comparable to implementing previous method over large range of possible true incidence (RWD)
 
-Pending cluster computation
+Pending cluster computation. Idea: Reverse binomial sample (for each reported incidence of Ebola data) back to true incidence 1000 times. Then use old method to infer $R_t$. This inference (taking means of means and means of credible intervals) should then by identical to our inference (by eye).
 
 ## Section 3. Increasing $\rho$ leads to more accurate inference with appropriate coverage
 
 ![fig4](figs/sectionEffectOfRho/increasingRhoIsGood.png)
 
 *Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals*
+
+NB: We go back to simulated data here. Could this order be confusing for the reader? We have to decide between ordering sections by data-sets or ordering sections by principles of inference and then point about increasing $\rho$.
 
 ## Section 4. Verification that increasing $\rho$ leads to narrower credible intervals
 

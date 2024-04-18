@@ -222,6 +222,8 @@ hold on
 histogram(coverageBySimNaiveEE, 'Normalization', 'probability')
 yticks(0:0.1:0.6)
 yticklabels({'0', '10', '20', '30', '40', '50', '60'})
+xline(mean(coverageBySim), 'blue')
+xline(mean(coverageBySimNaiveEE), 'red')
 
 xticks(1:10)
 xticklabels({'10', '20', '30', '40', '50', '60', '70', '80', '90', '100'})
