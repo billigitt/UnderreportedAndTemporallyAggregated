@@ -57,7 +57,7 @@ NB: 3rd subplot should be with fig 4?
 
 ![fig3](figs/sectionRobustness/mainRobustness.png)
 
-*Fig 3: Clear demo that our method is more robust, and motivates why we choose $M=100,000$ (SUPP)*
+*Fig 3: Clear demo that our method is more robust, and motivates why we choose M=100,000 (SUPP)*
 
 ![fig4](figs/sectionEffectOfRho/IncreasingRhoIsGood.png)
 
