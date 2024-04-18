@@ -45,24 +45,24 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
 We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
 
-![example simulation all incidence](figs/sectionBasicInference/standardPlot.png)
+![fig1](figs/sectionBasicInference/standardPlot.png)
 
 *Fig 1: Single example showing that our inference is more accurate than EE, and has better coverage*
 
-![example simulation final 10 weeks](figs/sectionBasicInference/mainFigureBasicInference.png)
+![fig2](figs/sectionBasicInference/mainFigureBasicInference.png)
 
 *Fig 2: Large scale study showing our inference is both more precise and more accurate than EE*
 
 NB: 3rd subplot should be with fig 4?
 
-![epiestim imperfect info against ours](figs/sectionRobustness/mainRobustness.png)
+![fig3](figs/sectionRobustness/mainRobustness.png)
 
 *Fig 3: Clear demo that our method is more robust, and motivates why we choose $M=100,000$ (SUPP)*
 
-![epiestim perfect info against ours](figs/sectionEffectOfRho/IncreasingRhoIsGood.png)
+![fig4](figs/sectionEffectOfRho/IncreasingRhoIsGood.png)
 
-*Fig 4: Demo that increasing $\rho$ leads to smaller errors and narrower credible intervals*
+*Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals*
 
-![robustness check](figs/sectionRWD/widthOfCredibleIntervalsDecreaseWithRho.png)
+![fig5](figs/sectionRWD/widthOfCredibleIntervalsDecreaseWithRho.png)
 
 *Fig 5: Same point as Fig 4 but with real world data.*
