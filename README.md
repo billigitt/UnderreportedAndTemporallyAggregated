@@ -41,7 +41,7 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
 + Skeleton paragraphs.
 
-## Section 1. Checking incidence is accurate, precise and robust.
+## Section 1. Checking inference is accurate, precise and robust.
 
 We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
 
@@ -53,16 +53,24 @@ We look at two case studies. Firstly, we look at a realistic outbreak. Secondly,
 
 *Fig 2: Large scale study showing our inference is both more precise and more accurate than EE*
 
-NB: 3rd subplot should be with fig 4?
-
 ![fig3](figs/sectionRobustness/mainRobustness.png)
 
 *Fig 3: Clear demo that our method is more robust, and motivates why we choose M=100,000 (SUPP)*
+
+## Section 2. Inference is comparable to implementing previous method over large range of possible true incidence (RWD)
+
+Pending cluster computation
+
+## Section 3. Increasing $\rho$ leads to more accurate inference with appropriate coverage
 
 ![fig4](figs/sectionEffectOfRho/increasingRhoIsGood.png)
 
 *Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals*
 
+## Section 4. Verification that increasing $\rho$ leads to narrower credible intervals
+
 ![fig5](figs/sectionRWD/widthOfCrediblesDecreaseWithRho.png)
 
 *Fig 5: Same point as Fig 4 but with real world data.*
+
+NB: We do not do a large-scale study here and instead simulate reported incidence by choosing the most likely reporting given true incidence. This gives a simple, interpretable figure instead of re-running analyses to account for stochasticity.

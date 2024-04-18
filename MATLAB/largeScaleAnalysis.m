@@ -169,16 +169,16 @@ xlim([0.26 0.9])
 ylim([0 10])
 xticks(0.33:0.1:0.83)
 
-ylabel('Credibleinterval width')
+ylabel('Credible interval width')
 xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
 
 subplot(3, 1, 3)
 
-plot(0.33:0.1:0.83, coverageByRho)
+plot(0.33:0.1:0.83, 100*coverageByRho)
 hold on
-yline(overallTotalCoverage)
-plot(0.33:0.1:0.83, coverageEEByRho)
-yline(overallNaiveEECoverage)
+yline(100*overallTotalCoverage)
+plot(0.33:0.1:0.83, 100*coverageEEByRho)
+yline(100*overallNaiveEECoverage)
 xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
 ylabel('Coverage (%)')
 legend('Simulation Approach', 'Naive Epi-Estim')
