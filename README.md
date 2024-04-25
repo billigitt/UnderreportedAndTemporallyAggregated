@@ -19,7 +19,7 @@ $M$: Sample threshold in ABC algorithm
 Our project is broken down into 3 main sections (with main message in brackets):
 
 # 1. Simple single study and large study (fixing true incidence) to show inference works (lower errors than Naive EE, correct coverage, robust for $M=10^5$)
-# 2. Real world data set demonstrating that our method is a faster, more practical way of achieving desired inference.
+# 2. Real world data set demonstrating that our novel method gives different answers to a naive usage of the last method (and therefore motivates the need for it)
 # 3. Same large study  but stratified by $\rho$ (improving reporting leads to greater confidence in $R_t$ inference wrt credible intervals and mean error)
 # 4. Real world data-set from an Ebola outbreak (showing that higher $\rho$ leads to narrower credible intervals but with RWD)
 
@@ -49,7 +49,7 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
 ## Section 1. Checking inference is accurate, approppriately covered(?) and robust.
 
-We look at two case studies. Firstly, we look at a realistic outbreak. Secondly, we simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior.
+We simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior. We look at a single outbreak and compare this to Epi-Estim, as well as looking at the whole set of epidemics vs Epi-Estim. The point is to show accuracy, coverage are better than an Epi-Estim approach. We also show that our method is robust.
 
 ![fig1](figs/sectionBasicInference/standardPlot.png)
 
@@ -63,21 +63,26 @@ We look at two case studies. Firstly, we look at a realistic outbreak. Secondly,
 
 *Fig 3: Clear demo that our method is more robust, and motivates why we choose M=100,000 (SUPP)*
 
-## Section 2. Inference is comparable to implementing previous method over large range of possible true incidence (RWD)
+## Section 2. Inference gives wider credible intervals than naively using Original method and scaling up
 
-Pending cluster computation. Idea: Reverse binomial sample (for each reported incidence of Ebola data) back to true incidence 1000 times. Then use old method to infer $R_t$. This inference (taking means of means and means of credible intervals) should then by identical to our inference (by eye).
+Now that we have shown that our method is better than using Epi-Estim in this scenario, what about using our old method? We show that naively implementing the old method is also not sufficient.
+
+Multiply all incidence data by 2.5 (given $\rho = 0.4$) and compute inference with old method vs using new method.
+
+![fig4](figs/sectionOldVsNew/oldScaledUpVsNew.png)
+
+In the following section, we motivate getting better reporting rates by showing that $R_t$ inference gives a wide range of values depending on what $\rho$ is assumed. It is therefore critical that an accurate value of $\rho$ is obtained. It also beneficial to increase reporting as this is correlated with better accuracy and coverage.
 
 ## Section 3. Increasing $\rho$ leads to more accurate inference with appropriate coverage
 
-![fig4](figs/sectionEffectOfRho/increasingRhoIsGood.png)
+![fig5](figs/sectionEffectOfRho/increasingRhoIsGood.png)
 
 *Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals. Also that credible interval width is the same for EE and how coverage also depends on reporting for EE but not for our method.*
 
-NB: We go back to simulated data here. Could this order be confusing for the reader? We have to decide between ordering sections by data-sets or ordering sections by principles of inference and then point about increasing $\rho$.
-
+NB: We go back to simulated data here. 
 ## Section 4. Verification that increasing $\rho$ leads to narrower credible intervals
 
-![fig5](figs/sectionRWD/widthOfCrediblesDecreaseWithRho.png)
+![fig6](figs/sectionRWD/widthOfCrediblesDecreaseWithRho.png)
 
 *Fig 5: Same point as Fig 4 but with real world data.*
 

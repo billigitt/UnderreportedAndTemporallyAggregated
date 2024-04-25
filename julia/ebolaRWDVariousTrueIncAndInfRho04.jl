@@ -35,14 +35,16 @@ Random.seed!(seedling)
     merged_df.n_sum = coalesce.(merged_df.n_sum, 0) 
     long_df = sort(merged_df, :date_onset)
 
-    nSims = 1000
+    nSims = Int(1e3)
 
     include("juliaUnderRepFunctions.jl")
 
 
-    final_df = long_df[1:75*7, :]
+    nWeeks = 102
 
-    weekly_vec = vec(sum(reshape(final_df.n_sum, 7, 75), dims =1))
+    final_df = long_df[1:nWeeks*7, :]
+
+    weekly_vec = vec(sum(reshape(final_df.n_sum, 7, nWeeks), dims =1))
 
     trueWeeklyI = zeros(Int, length(weekly_vec), nSims)
 
@@ -73,30 +75,41 @@ Random.seed!(seedling)
         wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
         priorRShapeAndScale = [1 5]
 
-    end
-
-
-
-
-##here we need to use old method to infer Rt over all possible true incidence...
-    dfNew = @distributed (append!) for i in 1:nSims
-
-        x = inferTempAggOnlyR(trueWeeklyI[:, i], wAssumed, priorRShapeAndScale, defaultM, defaultP, maxIter)
-    
-        DataFrame(
-            week = 1:length(x["means"]),
-            date = long_df.date_onset[1:7:(7*75-6)],
-            meanRt = vec(x["means"]),
-            lowerRt = x["cri"][:, 1],
-            upperRt = x["cri"][:, 2],
-            totalIterations = x["totalIterations"],
-            runTime = x["runTime"],
-            reportedWeeklyI = weekly_vec,
-            trueWeeklyI = trueWeeklyI[:, i]
-        )
-    
+        rPosteriorColumnNames = Symbol.("rPosterior_$i" for i in 1:defaultM)
 
     end
+
+
+
+
+dfNew = DataFrame()
+
+# Perform distributed computation and append results to dfNew
+dfNew = @distributed append! for i in 1:nSims
+    x = inferTempAggOnlyR(trueWeeklyI[:, i], wAssumed, priorRShapeAndScale, defaultM, defaultP, maxIter)
+    
+    # Construct DataFrame with individual columns for each element in x["rPosterior"]
+    temp_df = DataFrame(
+        week = 1:length(x["means"]),
+        date = long_df.date_onset[1:7:(7*nWeeks-6)],
+        meanRt = vec(x["means"]),
+        lowerRt = x["cri"][:, 1],
+        upperRt = x["cri"][:, 2],
+        totalIterations = x["totalIterations"],
+        runTime = x["runTime"],
+        reportedWeeklyI = weekly_vec,
+        trueWeeklyI = trueWeeklyI[:, i]
+    )
+    
+    # Add columns for each element in x["rPosterior"]
+    for j in 1:size(x["rPosterior"], 2)
+        col_name = Symbol("rPosterior_$j")
+        temp_df[!, col_name] = x["rPosterior"][:, j]
+    end
+    
+    # Append temp_df to dfNew
+    temp_df
+end
 
     CSV.write("ebolaRWDVariousTrueIncAndInfRho04Sims.csv", dfNew)
 

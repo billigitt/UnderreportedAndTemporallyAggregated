@@ -14,12 +14,18 @@ set(0, 'defaultUicontrolFontName', 'aakar');
 set(0, 'defaultUitableFontName', 'aakar');
 set(0, 'defaultUipanelFontName', 'aakar');
 
-set(groot, 'defaultAxesTickLabelInterpreter','latex');
-set(groot, 'defaultLegendInterpreter','latex');
+set(groot, 'defaultAxesTickLabelInterpreter','tex');
+set(groot, 'defaultLegendInterpreter','tex');
+set(0, 'DefaultTextInterpreter', 'tex')
 
 load('../MATs/largeScaleStudy.mat')
 load('../MATs/largeScaleAnalysisOurEE.mat')
 load('../MATs/SIWeekly.mat')
+
+% colour scheme: blue (row 1) is EpiEstim, red (row 2) is original method
+% (temp agg), green (row 3) is new method (temp agg + under-rep)
+% 
+colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.4660 0.6740 0.1880];
 
 %%
 
@@ -150,38 +156,36 @@ ylabel('Percentage of inferences (%)')
 figure
 
 subplot(3, 1, 1)
-boxchart(largeScaleStudyFinal.rho, 100*abs(largeScaleStudyFinal.meanRt-largeScaleStudyFinal.trueR)./largeScaleStudyFinal.trueR, 'BoxWidth', 0.05, 'MarkerStyle', 'none')
-hold on
-boxchart(repmat(rhoToRepeat, 1000, 1), absoluteRelativeErrorNaiveEE*100, 'BoxWidth', 0.05, 'MarkerStyle', 'none')
+b = boxchart(largeScaleStudyFinal.rho, 100*abs(largeScaleStudyFinal.meanRt-largeScaleStudyFinal.trueR)./largeScaleStudyFinal.trueR, 'BoxWidth', 0.05, 'MarkerStyle', 'none');
+b.BoxFaceColor = colourMat(3, :);
 xlim([0.26 0.9])
 ylim([0 100])
 xticks(0.33:0.1:0.83)
 
 ylabel('Error (%)')
-xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
+xlabel('Reporting rate, \rho')
 
 
 subplot(3, 1, 2)
-boxchart(largeScaleStudyFinal.rho, (largeScaleStudyFinal.upperRt-largeScaleStudyFinal.lowerRt), 'BoxWidth', 0.05, 'MarkerStyle', 'none')
-hold on
-boxchart(repmat(rhoToRepeat, 1000, 1), cisEE(:, 1) - cisEE(:, 2), 'BoxWidth', 0.05, 'MarkerStyle', 'none')
+b = boxchart(largeScaleStudyFinal.rho, (largeScaleStudyFinal.upperRt-largeScaleStudyFinal.lowerRt), 'BoxWidth', 0.05, 'MarkerStyle', 'none');
+b.BoxFaceColor = colourMat(3, :);
 xlim([0.26 0.9])
 ylim([0 10])
 xticks(0.33:0.1:0.83)
 
-ylabel('Credible interval width')
-xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
+ylabel({'95% credible';'interval width'})
+xlabel('Reporting rate, \rho')
 
 subplot(3, 1, 3)
 
-plot(0.33:0.1:0.83, 100*coverageByRho)
+plot(0.33:0.1:0.83, 100*coverageByRho, 'color', colourMat(3,:))
 hold on
-plot(0.33:0.1:0.83, 100*coverageEEByRho)
-yline(100*overallTotalCoverage)
-yline(100*overallNaiveEECoverage)
-xlabel('Reporting rate, $\rho$', 'interpreter', 'latex')
+plot(0.33:0.1:0.83, 100*coverageEEByRho, 'color', colourMat(1, :))
+% yline(100*overallTotalCoverage, )
+% yline(100*overallNaiveEECoverage)
+xlabel('Reporting rate, \rho')
 ylabel('Coverage (%)')
-legend('Simulation Approach', 'Naive Epi-Estim')
+legend('\itM\rm = 100,000', 'Cori')
 
 figure
 
@@ -202,9 +206,9 @@ set(gca,'yscale','log')
 
 figure
 subplot(1, 2, 1)
-histogram(100*absoluteRelativeError, 'Normalization', 'probability')
+histogram(100*absoluteRelativeError, 'Normalization', 'probability', 'FaceColor', colourMat(3, :))
 hold on
-histogram(100*absoluteRelativeErrorNaiveEE, 'Normalization', 'probability')
+histogram(100*absoluteRelativeErrorNaiveEE, 'Normalization', 'probability', 'FaceColor', colourMat(1, :))
 xticks(0:25:150)
 xticklabels({'0', '25', '50', '75', '100'})
 yticks(0:0.05:0.25)
@@ -212,25 +216,25 @@ yticklabels({'0', '5', '10', '15', '20', '25'})
 xlim([-5 125])
 xlabel('Relative error (%)')
 ylabel('Percentage of inferences (%)')
-xline(mean(absoluteRelativeErrorNaiveEE)*100, 'red')
-xline(mean(absoluteRelativeError)*100, 'blue')
+xline(mean(absoluteRelativeErrorNaiveEE)*100, '--', 'color', colourMat(1, :), 'LineWidth', 2)
+xline(mean(absoluteRelativeError)*100, '--', 'color', colourMat(3, :), 'LineWidth', 2)
 
 subplot(1, 2, 2)
 
-histogram(coverageBySim, 'Normalization', 'probability')
+histogram(coverageBySim, 'Normalization', 'probability', 'FaceColor', colourMat(3, :))
 hold on
-histogram(coverageBySimNaiveEE, 'Normalization', 'probability')
+histogram(coverageBySimNaiveEE, 'Normalization', 'probability', 'FaceColor', colourMat(1, :))
 yticks(0:0.1:0.6)
 yticklabels({'0', '10', '20', '30', '40', '50', '60'})
-xline(mean(coverageBySim), 'blue')
-xline(mean(coverageBySimNaiveEE), 'red')
+xline(mean(coverageBySim), '--','color', colourMat(3, :), 'LineWidth', 2)
+xline(mean(coverageBySimNaiveEE), '--', 'color', colourMat(1, :), 'LineWidth', 2)
 
 xticks(1:10)
 xticklabels({'10', '20', '30', '40', '50', '60', '70', '80', '90', '100'})
-ylabel('Relative frequency (%)')
+ylabel('Percentage of simulations (%)')
 xlabel('Credible interval coverage (%)')
 
-legend('Simulation Approach', 'Naive Epi-Estim')
+legend('\itM\rm = 100,000', 'Cori')
 
 % Fig to show that coverage  does not change with rho
 

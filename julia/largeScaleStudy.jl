@@ -11,11 +11,14 @@
 #Pkg.add("DataFrames")
 #Pkg.add("Tables")
 
+import Pkg
+Pkg.add(["QuadGK", "Distributions", "StatsBase", "Random", "DataFrames", "CSV", "Dates", "Distributed", "SharedArrays", "ProgressMeter", "Trapz", "Debugger", "JuliaInterpreter", "Tables", "Plots"])
 
-using Debugger, JuliaInterpreter, Trapz, ProfileView, CSV, DataFrames, Tables, Plots, Distributed, ProgressMeter, Random
 
-addprocs(4)
-Random.seed!(5)
+using Debugger, JuliaInterpreter, Trapz, CSV, DataFrames, Tables, Plots, Distributed, ProgressMeter, Random
+
+addprocs(24)
+Random.seed!(1)
 
 # Simulate Ebola epidemic. First phase (R=10) is highly transmissible, then quite (R=1.5), then low (R=0.75).
 # This is to give a realistic epidemic curve. We assume that the epidemic is reported with a probability of rho.
@@ -26,8 +29,8 @@ Random.seed!(5)
     using Trapz, DataFrames, ProgressMeter
     include("juliaUnderRepFunctions.jl")
     T = 11
-    nEpidemics =Int(250)
-    probReported = 0.33:0.1:0.83 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
+    nEpidemics =Int(1e3)
+    probReported = 0.1:0.1:0.9 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
 # this 0.4 value is also corroborated in doi: 10.1371/journal.pntd.0006161 (Dalziel, unreported cases in Ebola)
 probsConsidered = length(probReported)
 
@@ -54,7 +57,7 @@ end
 trueP = 7
 defaultP = 7
 #the following parameters must be for a weekly parameterisation of the serial interval. The choice of defaultP then corrects this.
-wContGamPar = [2.71, 5.65/7] #https://royalsocietypublishing.org/doi/epdf/10.1098/rsif.2023.0374 shape = 15.3^2/9.3^2, scale = 9.3^2/15.3  because (mean, std) = (15.3, 9.3)
+wContGamPar = [15.3^2/9.3^2, 9.3^2/(15.3*7)] #https://royalsocietypublishing.org/doi/epdf/10.1098/rsif.2023.0374 shape = 15.3^2/9.3^2, scale = 9.3^2/15.3  because (mean, std) = (15.3, 9.3)
 nWeeksForSI = 10
 divisionsPerP = Int(1e2)
 
@@ -116,4 +119,4 @@ end
 end
 
 
-CSV.write("largeScaleStudy5.csv", dfNew)
+CSV.write("largeScaleStudyCluster.csv", dfNew)

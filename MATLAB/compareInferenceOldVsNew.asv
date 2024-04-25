@@ -1,0 +1,42 @@
+clear all
+close all
+
+set(0,'DefaultFigureWindowStyle','normal')
+set(0,'DefaultTextInterpreter', 'none')
+set(0,'defaultAxesTickLabelInterpreter','none');
+set(0, 'defaultLegendInterpreter','none')
+set(0, 'defaultaxesfontsize', 18)
+set(0, 'defaultlinelinewidth', 1.5)
+
+set(0, 'DefaultAxesFontName', 'aakar');
+set(0, 'DefaultTextFontName', 'aakar');
+set(0, 'defaultUicontrolFontName', 'aakar');
+set(0, 'defaultUitableFontName', 'aakar');
+set(0, 'defaultUipanelFontName', 'aakar');
+
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+
+load('../MATs/realWorldNovelInferenceEbolaSingleRho04.mat')
+load('../MATs/realWorldNovelInferenceEbolaSingleNaiveRho04.mat')
+
+T = 102;
+
+% VarName8 gives the reported incidence, VarName9 gives the hidden
+% incidence
+
+numWeeks = T;
+
+%%
+
+p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], (2:T)', 'blue', '', '');
+hold on
+p2 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleRho04.upperRt(2:end)], (2:102)', 'red', '', '');
+xlabel('Time (weeks)')
+ylabel('$R_t$', 'interpreter', 'latex')
+legend([p1, p2], 'Naive Ogi-Gittins et al.')
+
+figure
+bar(1:102, realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI)
+xlabel('Time (weeks)')
+ylabel('Reported Incidence')

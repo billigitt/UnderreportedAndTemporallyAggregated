@@ -416,9 +416,9 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
                     iter = 1 #? basically sampling from same initial samples. Is there a better way?
                     k += 1
 
-                    # Resampling = reSampling(M, maxIter, P, storedI, weeklyRepI[1], t, priorRShapeScale, sampleI)
-                    # sampleI = Resampling["sampleI"]
-                    # sampleR = Resampling["sampleR"]
+                    Resampling = reSampling(M, maxIter, P, storedI, weeklyRepI[1], t, priorRShapeScale, sampleI)
+                    sampleI = Resampling["sampleI"]
+                    sampleR = Resampling["sampleR"]
     
                 end
             end

@@ -16,6 +16,7 @@ set(0, 'defaultUipanelFontName', 'aakar');
 
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
+set(0, 'DefaultTextInterpreter', 'tex')
 
 load('../MATs/ebolaStutteringSimulationAndInferenceSeed6.mat')
 
