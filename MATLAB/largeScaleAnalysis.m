@@ -186,6 +186,7 @@ plot(0.33:0.1:0.83, 100*coverageEEByRho, 'color', colourMat(1, :))
 xlabel('Reporting rate, \rho')
 ylabel('Coverage (%)')
 legend('\itM\rm = 100,000', 'Cori')
+box off
 
 figure
 
@@ -218,7 +219,7 @@ xlabel('Relative error (%)')
 ylabel('Percentage of inferences (%)')
 xline(mean(absoluteRelativeErrorNaiveEE)*100, '--', 'color', colourMat(1, :), 'LineWidth', 2)
 xline(mean(absoluteRelativeError)*100, '--', 'color', colourMat(3, :), 'LineWidth', 2)
-
+box off
 subplot(1, 2, 2)
 
 histogram(coverageBySim, 'Normalization', 'probability', 'FaceColor', colourMat(3, :))
@@ -235,6 +236,7 @@ ylabel('Percentage of simulations (%)')
 xlabel('Credible interval coverage (%)')
 
 legend('\itM\rm = 100,000', 'Cori')
+box off
 
 % Fig to show that coverage  does not change with rho
 

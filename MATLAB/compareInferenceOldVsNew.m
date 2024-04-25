@@ -39,6 +39,7 @@ subplot(1, 2, 1)
 bar(1:102, realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI)
 xlabel('Time (\itt\rm weeks)')
 ylabel('Reported Incidence')
+box off
 
 subplot(1, 2, 2)
 p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], (2:T)', colourMat(2, :), '', '');

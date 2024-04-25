@@ -47,6 +47,7 @@ bar(largeScaleStudy.reportedWeeklyI(23:33))
 ylabel('Reported Incidence')
 xlabel('Time (\itt \rmweeks)')
 xlim([0.5 11.5])
+box off
 subplot(1,2,2)
 x = plotMeanAndCredible(robustnessCheckFromLargeScaleStudyM1e5.meanRt(4:11), ...
     [robustnessCheckFromLargeScaleStudyM1e5.lowerRt(4:11),...

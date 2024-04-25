@@ -20,7 +20,7 @@ set(groot, 'defaultLegendInterpreter','tex');
 set(0, 'DefaultTextInterpreter', 'tex')
 
 load('../MATs/realWorldInferenceEbolaAllRho.mat')
-
+load('../MATs/realWorldNovelInferenceEbolaSingleRho04.mat')
 
 meanAndCredibleAllRhoMatrix = zeros(max(realWorldInferenceEbolaRho1.week), 3, 9); % 3D matrix with 1st dim being time, 2nd dim being means, lower percentiles and upper percentiles, and 3rd dim being rho.
 
@@ -55,24 +55,53 @@ meanAndCredibleAllRhoMatrix(:, 3, 8) = realWorldInferenceEbolaRho8.upperRt;
 meanAndCredibleAllRhoMatrix(:, 3, 9) = realWorldInferenceEbolaRho9.upperRt;
 
 figure
-subplot(1, 2, 1)
+subplot(2, 2, 1)
 
-bar(realWorldInferenceEbolaRho1.trueWeeklyI)
+bh = bar(1:102, [realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI], 'stacked');
 xlabel('Time (\itt \rmweeks)')
 ylabel('Assumed true incidence')
+set(bh, 'FaceColor', 'Flat')
+bh(2).CData = [0.5 0.5 0.5];
 
+legend('Actual reported incidence', 'Simulated hidden incidence')
+box off
+
+subplot(2, 2, 2)
+
+bh = bar(1:102, [realWorldInferenceEbolaRho1.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldInferenceEbolaRho1.reportedWeeklyI], 'stacked');
+xlabel('Time (\itt \rmweeks)')
+ylabel('Assumed true incidence')
+set(bh, 'FaceColor', 'Flat')
+bh(1).CData = [0.9290 0.6940 0.1250];
+bh(2).CData = [0.5 0.5 0.5];
+
+legend('Simulated reported incidence (\rho = 0.1)', 'Simulated hidden incidence')
+box off
+
+subplot(2, 2, 3)
+
+
+bh = bar(1:102, [realWorldInferenceEbolaRho9.reportedWeeklyI, realWorldInferenceEbolaRho9.trueWeeklyI - realWorldInferenceEbolaRho9.reportedWeeklyI], 'stacked');
+xlabel('Time (\itt \rmweeks)')
+ylabel('Assumed true incidence')
+set(bh, 'FaceColor', 'Flat')
+bh(1).CData = [0.4940 0.1840 0.5560];
+bh(2).CData = [0.5 0.5 0.5];
+legend('Simulated reported incidence (\rho = 0.9)', 'Simulated hidden incidence')
+box off
 % figure
 % plotMeanAndCredible(realWorldInferenceEbola.meanRt, [realWorldInferenceEbola.lowerRt, realWorldInferenceEbola.upperRt])
 % xlabel('Time (days)')
 % ylabel('Rt')
-subplot(1, 2, 2)
+subplot(2, 2, 4)
 p(1) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 1), [meanAndCredibleAllRhoMatrix(2:end, 2, 1), meanAndCredibleAllRhoMatrix(2:end, 3, 1)], (2:102)', [0.9290 0.6940 0.1250], 'a', 'b');
 hold on
 p(3) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 9), [meanAndCredibleAllRhoMatrix(2:end, 2, 9), meanAndCredibleAllRhoMatrix(2:end, 3, 9)], (2:102)', [0.4940 0.1840 0.5560], 'a3', 'b3');
 xlabel('Time (\itt\rm weeks)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
 legend(p([1 3]), '\rho = 0.1', '\rho = 0.9')
-
+xlim([0 102.5])
+box off
 % figure
 % p(1) = plotMeanAndCredibleNoFill(meanAndCredibleAllRhoMatrix(2:end, 1, 1), [meanAndCredibleAllRhoMatrix(2:end, 2, 1), meanAndCredibleAllRhoMatrix(2:end, 3, 1)], (2:75)', 'red', 'a');
 % hold on
