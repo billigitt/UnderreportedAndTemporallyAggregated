@@ -253,8 +253,8 @@ b = boxchart(largeScaleStudyFinal.rho(idxInformative), 100*abs(largeScaleStudyFi
 b.BoxFaceColor = colourMat(3, :);
 xlim([0 1])
 ylim([0 80])
-xticks(0.1:0.2:0.9)
-
+xticks(0.1:0.1:0.9)
+xlim([0.05 0.95])
 ylabel('Error (%)')
 xlabel('Reporting rate, \rho')
 
@@ -264,8 +264,8 @@ b = boxchart(largeScaleStudyFinal.rho(idxInformative), (largeScaleStudyFinal.upp
 b.BoxFaceColor = colourMat(3, :);
 xlim([0 1])
 ylim([0 6])
-xticks(0.1:0.2:0.9)
-
+xticks(0.1:0.1:0.9)
+xlim([0.05 0.95])
 ylabel('95% CrI width')
 xlabel('Reporting rate, \rho')
 
@@ -281,9 +281,10 @@ ylim([60 100])
 xlabel('Reporting rate, \rho')
 ylabel('CrI coverage (%)')
 legend([pp gg], "Simulation based"+newline+"(under-reporting)", "Cori (no"+newline+"under-reporting)")
-xticks(0.1:0.2:0.9)
+xticks(0.1:0.1:0.9)
+xlim([0.05 0.95])
 box off
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
 % figure
 % 
 % scatter(largeScaleStudyFinal.reportedWeeklyI, absoluteRelativeErrorNaiveEE)
@@ -310,7 +311,7 @@ xticks(0:25:150)
 xticklabels({'0', '25', '50', '75', '100'})
 yticks(0:0.05:0.25)
 yticklabels({'0', '5', '10', '15', '20', '25'})
-xlim([-5 125])
+xlim([0 100])
 xlabel('Relative error (%)')
 ylabel('Percentage of inferences (%)')
 xline(mean(absoluteRelativeErrorNaiveEE(idxInformativeEE))*100, '--', 'color', colourMat(1, :), 'LineWidth', 2)
@@ -333,7 +334,7 @@ xlabel('CrI coverage (%)')
 
 legend("Simulation based"+newline+"(under-reporting)", "Cori (no"+newline+"under-reporting)")
 box off
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
 
 % Fig to show that coverage  does not change with rho
 

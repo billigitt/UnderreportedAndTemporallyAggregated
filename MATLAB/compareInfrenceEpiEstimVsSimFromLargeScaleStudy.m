@@ -43,14 +43,15 @@ outputStruct = R_Time_Series_EpiEstim(inputStruct);
 % Plot 1: Standard Plot
 
 figure
-subplot(1, 2, 1)
+tile = tiledlayout(1, 2);
+nexttile
 bar(largeScaleStudy.reportedWeeklyI(23:33), 'BarWidth', 1)
 ylabel('Reported incidence')
 xlabel('Time (\itt \rmweeks)')
-xlim([0.5 11.5])
+xlim([0.25 11.75])
 xticks(1:11)
 box off
-subplot(1,2,2)
+nexttile
 x = plotMeanAndCredible(robustnessCheckFromLargeScaleStudyM1e5.meanRt(4:11), ...
     [robustnessCheckFromLargeScaleStudyM1e5.lowerRt(4:11),...
     robustnessCheckFromLargeScaleStudyM1e5.upperRt(4:11)], (4:11)', colourMat(3, :), 'Epi-Estim Perfect Information Mean', 'Epi-Estim Perfect Information 95% Cri');
@@ -62,6 +63,8 @@ ylabel({'\fontsize{18}';'\fontsize{18}Time-dependent';'\fontsize{18}reproduction
 xlabel('Time (\itt \rmweeks)')
 xlim([3.5 11.5])
 xticks(4:11)
+tile.Padding  = 'compact';
+tile.TileSpacing = 'compact';
 
 %
 
@@ -94,7 +97,7 @@ plot(Table.week(4:T), trueR(3:end), 'DisplayName', 'True $R_t$', 'color', 'black
 %scatter(Table.week(2:T), outputStruct.CIs(2, :), 40, 'MarkerEdgeColor',[0 0.4470 0.7410], 'MarkerFaceColor',[0 0.4470 0.7410], 'LineWidth',1.5, 'DisplayName', 'EpiEstim PI')
 xlabel('Time (\itt \rmweeks)')
 ylabel('2.5^{th} \itR\fontsize{14}t \fontsize{18}\rmpercentile')
-xlim([3.5 11.5])
+xlim([3.25 11.75])
 ylim([0 11])
 
 subplot(1, 3,3)

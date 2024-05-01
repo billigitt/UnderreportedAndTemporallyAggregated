@@ -48,15 +48,15 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
 We simulate a large number of epidemics, where the true $R_t$ values are sampled from the same gamma distribution that informs our prior. We look at a single outbreak and compare this to Epi-Estim, as well as looking at the whole set of epidemics vs Epi-Estim. The point is to show accuracy, coverage are better than an Epi-Estim approach. We also show that our method is robust.
 
-![fig1](figs/sectionBasicInference/standardPlot.png)
+![fig1](figs/sectionBasicInference/standardPlot.svg)
 
 *Fig 1: Single example showing that our inference is more accurate than EE, and has better coverage*
 
-![fig2](figs/sectionBasicInference/mainFigureBasicInference.png)
+![fig2](figs/sectionBasicInference/mainFigureBasicInference.svg)
 
 *Fig 2: Large scale study showing our inference is both more precise and more accurate than EE. Mean errors are 19.8% vs 27.8% and mean coverages are 94.7% vs 73.1%*
 
-![fig3](figs/sectionRobustness/mainRobustness.png)
+![fig3](figs/sectionRobustness/mainRobustness.svg)
 
 *Fig 3: Clear demo that our method is more robust, and motivates why we choose M=100,000 (SUPP)*
 
@@ -66,20 +66,20 @@ Now that we have shown that our method is better than using Epi-Estim in this sc
 
 Multiply all incidence data by 2.5 (given $\rho = 0.4$) and compute inference with old method vs using new method.
 
-![fig4](figs/sectionOldVsNew/oldScaledUpVsNew.png)
+![fig4](figs/sectionOldVsNew/oldScaledUpVsNew.svg)
 
 In the following section, we motivate getting better reporting rates by showing that $R_t$ inference gives a wide range of values depending on what $\rho$ is assumed. It is therefore critical that an accurate value of $\rho$ is obtained. It also beneficial to increase reporting as this is correlated with better accuracy and coverage.
 
 ## Section 3. Increasing $\rho$ leads to more accurate inference with appropriate coverage
 
-![fig5](figs/sectionEffectOfRho/increasingRhoIsGood.png)
+![fig5](figs/sectionEffectOfRho/increasingRhoIsGood.svg)
 
 *Fig 4: Demo that increasing reporting rate leads to smaller errors and the outliers of errors get smaller too.
 
 NB: We go back to simulated data here. 
 ## Section 4. Verification that increasing $\rho$ leads to narrower credible intervals
 
-![fig6](figs/sectionRWD/widthOfCrediblesDecreaseWithRho.png)
+![fig6](figs/sectionRWD/widthOfCrediblesDecreaseWithRho.svg)
 
 *Fig 5: Same point as Fig 4 but with real world data.*
 

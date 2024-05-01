@@ -24,7 +24,7 @@ load('../MATs/realWorldNovelInferenceEbolaSingleNaiveRho04.mat')
 % colour scheme: blue (row 1) is EpiEstim, red (row 2) is original method
 % (temp agg), green (row 3) is new method (temp agg + under-rep)
 % 
-colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.4660 0.6740 0.1880];
+colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.5*0.4660 0.5*0.6740 0.5*0.1880];
 
 T = 102;
 
@@ -36,7 +36,7 @@ numWeeks = T;
 %%
 figure
 subplot(1, 2, 1)
-bar(1:102, realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI)
+bar(1:102, realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, 'BarWidth', 1)
 xlabel('Time (\itt\rm weeks)')
 ylabel('Reported Incidence')
 box off
@@ -49,4 +49,4 @@ xlabel('Time (\itt\rm weeks)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
 legend([p1, p2], 'Naive Ogi-Gittins et al.', '\itM\rm = 100,000')
 xlim([0 25])
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
