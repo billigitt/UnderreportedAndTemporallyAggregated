@@ -48,3 +48,5 @@ p2 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleRho04.meanRt(2:end), 
 xlabel('Time (\itt\rm weeks)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
 legend([p1, p2], 'Naive Ogi-Gittins et al.', '\itM\rm = 100,000')
+xlim([0 25])
+set(gcf, 'color', 'none') ;

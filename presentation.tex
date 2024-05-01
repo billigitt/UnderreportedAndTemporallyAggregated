@@ -76,58 +76,12 @@
 \makeatother
 \usepackage{xcolor}
 \newif\ifbibliography
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{248,248,248}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{graphicx}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+\usepackage{caption}
+% Make caption package work with longtable
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
+\def\fnum@table{\tablename~\thetable}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
@@ -140,64 +94,226 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Presentation},
+  pdftitle={Time-dependent Reproduction Numbers: Temporal Aggregation and Under-reporting},
   pdfauthor={Zak OG},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{Presentation}
+\title{Time-dependent Reproduction Numbers: Temporal Aggregation and
+Under-reporting}
 \author{Zak OG}
 \date{2024-04-23}
 
 \begin{document}
 \frame{\titlepage}
 
-\begin{frame}{x}
-\protect\hypertarget{x}{}
-This is an \(R\) Markdown presentation. Markdown is a simple formatting
-syntax for authoring HTML, PDF, and MS Word documents. For more details
-on using R Markdown see \url{http://rmarkdown.rstudio.com}.
+\begin{frame}{Why bother with \(R_t\)?}
+\protect\hypertarget{why-bother-with-r_t}{}
+\begin{block}{Interpretable}
+\protect\hypertarget{interpretable}{}
+\(>1\) or \(<1\)
+\end{block}
 
-When you click the \textbf{Knit} button a document will be generated
-that includes both content as well as the output of any embedded R code
-chunks within the document.
+\begin{block}{Real-time}
+\protect\hypertarget{real-time}{}
+\end{block}
+
+\begin{block}{Monitor impact of interventions}
+\protect\hypertarget{monitor-impact-of-interventions}{}
+Suitable retrospectively
+\end{block}
 \end{frame}
 
-\begin{frame}{Slide with Bullets \(x^2\)}
-\protect\hypertarget{slide-with-bullets-x2}{}
+\begin{frame}{Terminology and Notation}
+\protect\hypertarget{terminology-and-notation}{}
+\begin{block}{What we know}
+\protect\hypertarget{what-we-know}{}
 \begin{itemize}
 \tightlist
 \item
-  Bullet 1
+  \(\boldsymbol{w}\): The discrete generation time distribution,
+  \(I_t\): The reported incidence at time \(t\)
+\end{itemize}
+\end{block}
+
+\begin{block}{What we wish we knew}
+\protect\hypertarget{what-we-wish-we-knew}{}
+\begin{itemize}
+\tightlist
 \item
-  Bullet 2
+  \(X_{t, t-i}\): The number of cases on day \(t\) arising due to cases
+  on day \(t-i\)
+\end{itemize}
+\end{block}
+
+\begin{block}{Why?}
+\protect\hypertarget{why}{}
+\[R_t = \frac{\sum_{i=1}X_{t+i,t}}{I_t}\]
+\end{block}
+
+\begin{block}{Why don't we know this?}
+\protect\hypertarget{why-dont-we-know-this}{}
+\begin{itemize}
+\tightlist
 \item
-  Bullet 3
+  Transmission trees are hidden
+\item
+  We can't see into the future!
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Time-dependent reproduction numbers}
+\protect\hypertarget{time-dependent-reproduction-numbers}{}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2941}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3529}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3529}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Property
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\(R_t\) (Instantaneous)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\(R_t^c\) (Case)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+Definition & Average number of people someone infected at time \(t\)
+\textbf{could expect to infect \emph{should conditions remain unchanged}
+} & Average number of people someone infected at time \(t\) \textbf{can
+expect to infect} \\
+Mean estimate & \(\frac{I_t}{\sum_{s=1}I_{t-s}w_s}\) &
+\(\frac{\sum_{s=1} I_{t+s}w_s}{\sum_kI_{t+s-k}w_k}\) \\
+Popular Method & Epi-Estim & Wallinga-Teunis \\
+Pros & Real-time estimate, Prior information incorporated, Analytical &
+No inherent condition \\
+Cons & Assumes condition remains the same & Simulation-based,
+Retrospective only, No prior \\
+\bottomrule\noalign{}
+\end{longtable}
+\end{frame}
+
+\begin{frame}{Utility of Reproduction Numbers}
+\protect\hypertarget{utility-of-reproduction-numbers}{}
+\begin{itemize}
+\tightlist
+\item
+  Population Dynamics (birth-counts \& maternal age distribution)
+\item
+  Information Dissemination\footnote<.->{\url{https://churchmodel.org.uk/home/about/}}
+  (new ``believers'' \& ``conversion'' distribution)
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Slide with R Output}
-\protect\hypertarget{slide-with-r-output}{}
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{summary}\NormalTok{(cars)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
-\end{verbatim}
+\begin{frame}{Epi-Estim \footnote<.->{Cori A, Ferguson NM, Fraser C,
+  Cauchemez S. A new framework and software to estimate time-varying
+  reproduction numbers during epidemics. Am J Epidemiol. 2013}}
+\protect\hypertarget{epi-estim-2}{}
+If \(R_t \sim \Gamma(a, b)\) and
+\(I_t|I_1^{t-1}, R_t \sim \mathrm{Poi}(R_t\sum_{s=1}I_{t-s}w_s)\), then
+\[R_t| I_1^t, \boldsymbol{w}\sim \Gamma\left(a+I_t-1, \frac{1}{\sum_{s=1}I_{t-s}w_s+1/b}\right)\]
 \end{frame}
 
-\begin{frame}{Slide with Plot}
-\protect\hypertarget{slide-with-plot}{}
-\includegraphics{presentation_files/figure-beamer/pressure-1.pdf}
+\begin{frame}{Problems outlined in the literature \footnote<.->{Gostic
+  KM, McGough L, Baskerville EB, Abbott S, Joshi K, et al.~Practical
+  considerations for measuring the effective reproductive number, Rt.
+  PLOS Computational Biology. 2021}}
+\protect\hypertarget{problems-outlined-in-the-literature-3}{}
+\begin{enumerate}
+\tightlist
+\item
+  Generation interval misspecification
+\item
+  Adjusting for delays
+\item
+  Adjusting for right truncation
+\item
+  Accounting for incomplete observation
+\item
+  Smoothing windows
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Accounting for incomplete observation}
+\protect\hypertarget{accounting-for-incomplete-observation}{}
+\begin{block}{Temporally aggregated incidence}
+\protect\hypertarget{temporally-aggregated-incidence}{}
+\begin{itemize}
+\tightlist
+\item
+  weekly aggregations e.g.~Ebola, COVID
+\item
+  particularly relevant for short GI (see next slide)
+\end{itemize}
+\end{block}
+
+\begin{block}{Incidence under-reporting}
+\protect\hypertarget{incidence-under-reporting}{}
+\begin{itemize}
+\tightlist
+\item
+  always occurs without mass-testing
+\item
+  requires knowledge of reporting probability, \(\rho\)
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Accounting for incomplete observation (ctd.)}
+\protect\hypertarget{accounting-for-incomplete-observation-ctd.}{}
+\end{frame}
+
+\begin{frame}{Method accounting for temporally aggregated incidence:
+Exact ABC \footnote<.->{*Ogi-Gittins et al.~A simulation-based approach
+  for estimating the time-dependent reproduction number from temporally
+  aggregated disease incidence time series data, 2024}}
+\protect\hypertarget{method-accounting-for-temporally-aggregated-incidence-exact-abc-4}{}
+\end{frame}
+
+\begin{frame}{Results 1}
+\protect\hypertarget{results-1}{}
+\end{frame}
+
+\begin{frame}{Results 2}
+\protect\hypertarget{results-2}{}
+\end{frame}
+
+\begin{frame}{Method accounting for temporally aggregated incidence and
+under-reporting: Weighting with Binomial likelihoods}
+\protect\hypertarget{method-accounting-for-temporally-aggregated-incidence-and-under-reporting-weighting-with-binomial-likelihoods}{}
+\end{frame}
+
+\begin{frame}{Method accounting for temporally aggregated incidence and
+under-reporting: Weighting with Binomial likelihoods}
+\protect\hypertarget{method-accounting-for-temporally-aggregated-incidence-and-under-reporting-weighting-with-binomial-likelihoods-1}{}
+\end{frame}
+
+\begin{frame}{Method accounting for temporally aggregated incidence and
+under-reporting: Weighting with Binomial likelihoods}
+\protect\hypertarget{method-accounting-for-temporally-aggregated-incidence-and-under-reporting-weighting-with-binomial-likelihoods-2}{}
+\end{frame}
+
+\begin{frame}{Method accounting for temporally aggregated incidence and
+under-reporting: Weighting with Binomial likelihoods}
+\protect\hypertarget{method-accounting-for-temporally-aggregated-incidence-and-under-reporting-weighting-with-binomial-likelihoods-3}{}
+\end{frame}
+
+\begin{frame}{Results}
+\protect\hypertarget{results}{}
+\end{frame}
+
+\begin{frame}{Results}
+\protect\hypertarget{results-3}{}
+\end{frame}
+
+\begin{frame}{Results}
+\protect\hypertarget{results-4}{}
+\end{frame}
+
+\begin{frame}{Thank you!}
+\protect\hypertarget{thank-you}{}
+Questions?
 \end{frame}
 
 \end{document}

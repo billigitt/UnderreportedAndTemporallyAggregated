@@ -36,15 +36,12 @@ Key concept: Coefficient of variation, $CV = \sigma/\mu$.
 
 ## Still to do (analysis):
 
-+ Comparing our method with long-way of computing Rt. Currently running on cluster.
 + Re-run analyses for
-  + $\rho = 0.3-0.9$?
-  + Incidence generated a different way? Although now we have all simulated data-sets from same method (Gam(1,3) prior)
+  + $\rho = 0.1-0.9$?
   + Entire Ebola data-set (took off 27 weeks)
-  + Generating data with what value of P? Have assumed 7 so far.
 + Decide exactly on all the details of figures- colours, labels, etc. Suggest we iron these details out next meeting?
 
-+ Start skeleton for manuscript?
++ Start skeleton for manuscript? Results is outlined here. Methods skeleton begun at bottom.
 
 
 ## Section 1. Checking inference is accurate, approppriately covered(?) and robust.
@@ -77,7 +74,7 @@ In the following section, we motivate getting better reporting rates by showing 
 
 ![fig5](figs/sectionEffectOfRho/increasingRhoIsGood.png)
 
-*Fig 4: Demo that increasing reporting rate leads to smaller errors and narrower credible intervals. Also that credible interval width is the same for EE and how coverage also depends on reporting for EE but not for our method.*
+*Fig 4: Demo that increasing reporting rate leads to smaller errors and the outliers of errors get smaller too.
 
 NB: We go back to simulated data here. 
 ## Section 4. Verification that increasing $\rho$ leads to narrower credible intervals
@@ -88,3 +85,25 @@ NB: We go back to simulated data here.
 
 NB: We do not do a large-scale study here and instead simulate reported incidence by choosing the most likely reporting given true incidence. This gives a simple, interpretable figure instead of re-running analyses to account for stochasticity.
 NB: Do we want to zoom in on figure to really show the effect? Could have these two and then zoom in from weeks 30-40 showing the same panels below these?
+
+
+## Skeleton of Manuscript
+
+# Introduction
+
+# Methods
+
+SS1: Outline that we compare 3 methods: Cori et al, Ogi-Gittins et al, and our new method on simulated and RWD.
+SS2: Outline Ogi-Gittins et al. and what it serves to do (account for temp-agg inc data)
+SS3: Detailed description of improvement to Ogi-Gittins et al., which gives rise to new approach.
+Add in algorithm describing method, as well as simple explanation that if we do the same as Method 1 but accept all simulations above
+SS4: Outbreak data-sets. A) Simulated data, B) Real-world data C) Real world data that is manipulated
+P1: Test on simulated data so that we can see difference in straightforward manner
+P2: Test on large number of epidemics in simulate data, and compare to Epi-Estim
+P3: Compare to Ogi-Gittins et al. (with simple scaling) on RWD
+P4: Then look at influence of different values of $\rho$ for simulated and real-world data.
+
+# Results
+
+
+# Conclusions

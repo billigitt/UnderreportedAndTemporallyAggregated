@@ -1,8 +1,9 @@
 ---
-title: "Presentation"
+title: "Time-dependent Reproduction Numbers: Temporal Aggregation and Under-reporting"
 author: "Zak OG"
 date: "2024-04-23"
 output:
+  beamer_presentation: default
   slidy_presentation: default
 ---
 
@@ -10,85 +11,161 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Terminology and Notation
+# Why bother with $R_t$?
 
-- $\boldsymbol{w}$: The discrete generation time distribution
-- $I_t$: The reported incidence at time $t$
+## Interpretable
 
-## Time-dependent reproduction numbers
+$>1$ or $<1$
 
-|Property | $R_t$ | $R_t^c$ |
+## Real-time
+
+## Monitor impact of interventions
+
+Suitable retrospectively
+
+# Terminology and Notation
+
+## What we know
+
+- $\boldsymbol{w}$: The discrete generation time distribution, $I_t$: The reported incidence at time $t$
+
+## What we wish we knew
+
+- $X_{t, t-i}$: The number of cases on day $t$ arising due to cases on day $t-i$
+
+## Why?
+
+$$R_t = \frac{\sum_{i=1}X_{t+i,t}}{I_t}$$
+
+## Why don't we know this?
+
+- Transmission trees are hidden
+- We can't see into the future!
+
+# Time-dependent reproduction numbers
+
+|Property | $R_t$ (Instantaneous) | $R_t^c$ (Case) |
 |----------|:----------:|:----------:|
-|Central equation| $\frac{I_t}{\sum_{s=1}I_{t-s}w_s}$   |$\frac{\sum_{s=1} I_{t+s}w_s}{\sum_kI_{t+s-k}w_k}$   |
 |Definition| Average number of people someone infected at time $t$ **could expect to infect *should conditions remain unchanged* ** |Average number of people someone infected at time $t$ **can expect to infect**|
+|Mean estimate| $\frac{I_t}{\sum_{s=1}I_{t-s}w_s}$   |$\frac{\sum_{s=1} I_{t+s}w_s}{\sum_kI_{t+s-k}w_k}$   |
 |Popular Method|Epi-Estim|Wallinga-Teunis|
 |Pros|Real-time estimate, Prior information incorporated, Analytical|No inherent condition|
-|Cons|Assumes condition remains the same|Retrospective only, No prior|
+|Cons|Assumes condition remains the same|Simulation-based, Retrospective only, No prior|
 
-## Utility of Reproduction Numbers
-
-Within Epidemiology:
-
-- Assessing the transmissibility present in a population
-- Assessing the effectiveness of interventions
-- Predicting epidemic trajectory? GREY.
-
-Outside of Epidemiology:
+# Utility of Reproduction Numbers
 
 - Population Dynamics (birth-counts & maternal age distribution)
-- Information Dissemination 
+- Information Dissemination[^1] (new "believers" & "conversion" distribution)
 
-## Epi-Estim
+<p align="right">
+    <img src="../churchGrowthModelling.jpg" alt="church" width="300">
+</p>
 
-If $R_t \sim \Gamma(a, b)$ and $I_t|I_1^{t-1}, R_t \sim \mathrm{Poi}(R_t\sum_{s=1}I_{t-s}w_s)$, then $R_t| I_1^t, \boldsymbol{w}\sim \Gamma\left(a+I_t-1, \frac{1}{\sum_{s=1}I_{t-s}w_s+1/b}\right)$
+[^1]: https://churchmodel.org.uk/home/about/
+
+# Epi-Estim [^2]
+
+If $R_t \sim \Gamma(a, b)$ and $I_t|I_1^{t-1}, R_t \sim \mathrm{Poi}(R_t\sum_{s=1}I_{t-s}w_s)$, then $$R_t| I_1^t, \boldsymbol{w}\sim \Gamma\left(a+I_t-1, \frac{1}{\sum_{s=1}I_{t-s}w_s+1/b}\right)$$
 
 <p align="center">
     <img src="archive/epiEstimScreenshot.png" alt="GenerationLength" width="400">
 </p>
 
-## Problems outlined in the literature
+[^2]: Cori A, Ferguson NM, Fraser C, Cauchemez S. A new framework and software to estimate time-varying reproduction numbers during epidemics. Am J Epidemiol. 2013
 
-- Generation interval misspecification
-- Adjusting for delays
-- Adjusting for right truncation
-- Accounting for incomplete observation
-- Smoothing windows
+# Problems outlined in the literature [^3]
 
-## Accounting for incomplete observation
+1. Generation interval misspecification
+2. Adjusting for delays
+3. Adjusting for right truncation
+4. Accounting for incomplete observation
+5. Smoothing windows
 
-- Temporally aggregated incidence
+[^3]: Gostic KM, McGough L, Baskerville EB, Abbott S, Joshi K, et al. Practical considerations for measuring the effective reproductive number, Rt. PLOS Computational Biology. 2021
+
+# Accounting for incomplete observation
+
+## Temporally aggregated incidence
   + weekly aggregations e.g. Ebola, COVID
   + particularly relevant for short GI (see next slide)
   
-- Incidence under-reporting
+## Incidence under-reporting
   + always occurs without mass-testing
+  + requires knowledge of reporting probability, $\rho$
 
-## Accounting for incomplete observation (ctd.)
+# Accounting for incomplete observation (ctd.)
 
-<p align="left">
+<p align="center">
     <img src="archive/GenerationLength.png" alt="GenerationLength" width="300">
 </p>
 
-## Method accounting for temporally aggregated incidence: Exact ABC
+# Method accounting for temporally aggregated incidence: Exact ABC [^4]
 
 <p align="center">
     <img src="archive/schematic1.png" alt="GenerationLength" width="800">
 </p>
 
-## Results 1
+[^4]: *Ogi-Gittins et al. A simulation-based approach for estimating the time-dependent reproduction number from temporally aggregated disease incidence time series data,  2024
+
+# Results 1
 
 <p align="center">
     <img src="archive/syntheticScreenshot1.png" alt="GenerationLength" width="400">
 </p>
 
-## Results 2
+# Results 2
 
 <p align="center">
-    <img src="figs/sectionRWD/widthOfCrediblesDecreaseWithRho.png" alt="My Image" width="800">
+    <img src="archive/originalMethodRWD.png" alt="My Image" width="400">
 </p>
 
-## Method accounting for temporally aggregated incidence and under-reporting
 
-## Results
+# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
+
+<p align="center">
+    <img src="figs/processing/schematic1.svg" alt="My Image" width="800">
+</p>
+
+# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
+
+<p align="center">
+    <img src="figs/processing/schematic2.svg" alt="My Image" width="800">
+</p>
+
+# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
+
+<p align="center">
+    <img src="figs/processing/schematic3.svg" alt="My Image" width="800">
+</p>
+
+# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
+
+<p align="center">
+    <img src="figs/processing/schematic4.svg" alt="My Image" width="800">
+</p>
+
+# Results
+
+<p align="center">
+    <img src="figs/sectionOldVsNew/oldVSNewPres.svg" alt="My Image" width="800" >
+</p>
+
+
+# Results
+
+<p align="center">
+    <img src="figs/archive/largeScaleStudy.svg" alt="My Image" width="1000">
+</p>
+
+# Results
+
+<p align="center">
+    <img src="figs/archive/largeScaleStudyByRho.svg" alt="My Image" width="1000">
+</p>
+
+# Thank you!
+
+Questions?
+
 
 

@@ -17,13 +17,13 @@ set(0, 'defaultUipanelFontName', 'aakar');
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
-load('../MATs/largeScaleStudy.mat')
-load('../MATs/epiEstimImperfectInfoLargeScaleStudy.mat')
+load('../MATs/largeScaleStudyCluster.mat')
+% load('../MATs/epiEstimImperfectInfoLargeScaleStudy.mat')
 load('../MATs/SIWeekly.mat')
 
 addpath('ownEpiEstim')
 
-largeScaleStudyRaw = vertcat(largeScaleStudy, largeScaleStudy2, largeScaleStudy4, largeScaleStudy5);
+largeScaleStudyRaw = largeScaleStudyCluster;
 
 T = 11;
 

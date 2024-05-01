@@ -7,6 +7,7 @@ set(0,'defaultAxesTickLabelInterpreter','none');
 set(0, 'defaultLegendInterpreter','none')
 set(0, 'defaultaxesfontsize', 18)
 set(0, 'defaultlinelinewidth', 1.5)
+set(groot, 'DefaultLegendFontSize', 15)
 
 set(0, 'DefaultAxesFontName', 'aakar');
 set(0, 'DefaultTextFontName', 'aakar');
@@ -27,7 +28,7 @@ load('../MATs/SIWeekly.mat')
 % colour scheme: blue (row 1) is EpiEstim, red (row 2) is original method
 % (temp agg), green (row 3) is new method (temp agg + under-rep)
 % 
-colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.4660 0.6740 0.1880]; 
+colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.5*0.4660 0.5*0.6740 0.5*0.1880]; 
 
 trueR = largeScaleStudy.trueR(24:33);
 
@@ -43,10 +44,11 @@ outputStruct = R_Time_Series_EpiEstim(inputStruct);
 
 figure
 subplot(1, 2, 1)
-bar(largeScaleStudy.reportedWeeklyI(23:33))
-ylabel('Reported Incidence')
+bar(largeScaleStudy.reportedWeeklyI(23:33), 'BarWidth', 1)
+ylabel('Reported incidence')
 xlabel('Time (\itt \rmweeks)')
 xlim([0.5 11.5])
+xticks(1:11)
 box off
 subplot(1,2,2)
 x = plotMeanAndCredible(robustnessCheckFromLargeScaleStudyM1e5.meanRt(4:11), ...
@@ -55,10 +57,11 @@ x = plotMeanAndCredible(robustnessCheckFromLargeScaleStudyM1e5.meanRt(4:11), ...
 hold on
 y = plotMeanAndCredible(outputStruct.Means(3:end)', outputStruct.CIs(:, 3:end)', (4:11)', colourMat(1, :), 'mean', 'ci');
 z = plot(4:11, trueR(3:end), 'k--');
-legend([x, y, z], '\itM\rm = 100,000', 'Cori', 'True \itR\fontsize{14}t')
-ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
+legend([x, y, z], '\fontsize{15}\itM\rm\fontsize{9} \fontsize{15}=\fontsize{1} \fontsize{15}100,000', 'Cori', 'True \itR\fontsize{12}t')
+ylabel({'\fontsize{18}';'\fontsize{18}Time-dependent';'\fontsize{18}reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
 xlabel('Time (\itt \rmweeks)')
 xlim([3.5 11.5])
+xticks(4:11)
 
 %
 
@@ -76,9 +79,9 @@ figure
 subplot(1,3,1)
 boxchart(Table.week(idxIncluded), Table.meanRt(idxIncluded), 'GroupByColor', Table.M(idxIncluded))
 hold on
-plot(Table.week(4:T), trueR(3:end), 'DisplayName', 'True \itR\fontsize{14}t', 'color', 'black', 'LineStyle', '--')
+plot(Table.week(4:T), trueR(3:end), 'DisplayName', 'True \itR\fontsize{12}t', 'color', 'black', 'LineStyle', '--')
 %scatter(Table.week(4:T), outputStruct.Means(3:10), 40, 'MarkerEdgeColor',[0 0.4470 0.7410], 'MarkerFaceColor',[0 0.4470 0.7410], 'LineWidth',1.5, 'DisplayName', 'EpiEstim PI')
-legend('\itM\rm = 1,000', '\itM\rm = 10,000', '\itM\rm = 100,000', 'True \itR\fontsize{14}t', 'EpiEstim')
+legend('\itM\rm\fontsize{9} \fontsize{15}=\fontsize{1} \fontsize{15}1,000', '\itM\rm\fontsize{9} \fontsize{15}=\fontsize{1} \fontsize{15}10,000', '\itM\rm\fontsize{9} \fontsize{15}=\fontsize{1} \fontsize{15}100,000', 'True \itR\fontsize{12}t', 'EpiEstim')
 xlabel('Time (\itt \rmweeks)')
 ylabel('Mean \itR\fontsize{14}t')
 xlim([3.5 11.5])
