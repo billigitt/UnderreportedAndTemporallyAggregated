@@ -27,7 +27,7 @@ The results of this project are broken down into 4 main sections (with main mess
 
 + Running old method on the 9,000 different data-sets. (currently running but may take a while!)
 
-+ Start skeleton for manuscript? Results are outlined here. Methods skeleton at bottom of page.
++ Start skeleton for manuscript. Results are outlined here. Methods skeleton at bottom of page.
 
 ## Schematic
 
@@ -75,10 +75,21 @@ NB: We go back to simulated data here.
 NB: We do not do a large-scale study here and instead simulate reported incidence by choosing the most likely reporting given true incidence. This gives a simple, interpretable figure instead of re-running analyses to account for stochasticity.
 NB: Do we want to zoom in on figure to really show the effect? Could have these two and then zoom in from weeks 30-40 showing the same panels below these?
 
-# Subtle points not forget
+# Points to discuss
+
+- removed inference points
+- schematic
+- code currently running on scaled-up OG
+- what to discuss with Nic. Run through everything in README.
+- practicalities in Oxford
+
+# Subtle points not to forget
 
 We could do a more elaborate version of scaling up the old method, but this would not be computationally feasible in reality.
-means can also differ in the RWD experiments and we could quote the values where they differ.
+
+Means can also differ in the RWD experiments and we could quote the values where they differ.
+
+In large-scale study, we remove inference points that give credible intervals that are too wide. In practice this is all credible intervals that are greater than 50% of the width of the prior. Should we also do this in the RWD?
 
 
 ## Skeleton of Manuscript
@@ -87,17 +98,34 @@ means can also differ in the RWD experiments and we could quote the values where
 
 # Methods
 
-SS1: Outline that we compare 3 methods: Cori et al, Ogi-Gittins et al, and our new method on simulated and RWD.
-SS2: Outline Ogi-Gittins et al. and what it serves to do (account for temp-agg inc data)
-SS3: Detailed description of improvement to Ogi-Gittins et al., which gives rise to new approach.
-Add in algorithm describing method, as well as simple explanation that if we do the same as Method 1 but accept all simulations above
-SS4: Outbreak data-sets. A) Simulated data, B) Real-world data C) Real world data that is manipulated
-P1: Test on simulated data so that we can see difference in straightforward manner
-P2: Test on large number of epidemics in simulate data, and compare to Epi-Estim
-P3: Compare to Ogi-Gittins et al. (with simple scaling) on RWD
-P4: Then look at influence of different values of $\rho$ for simulated and real-world data.
+*SS1*: Outline that we compare 3 methods: Cori et al, Ogi-Gittins et al, and our new method on simulated and RWD.
+
+P1: EpiEstim and what it has been used for
+
+P2: Why not accounting for under-reporting or aggregation may be bad
+
+P3: What original paper does
+
+P4: How original method can be improved by our new approach
+
+*SS2*: Outline Ogi-Gittins et al. and what it serves to do (account for temp-agg inc data)
+
+*SS3*: Detailed description of improvement to Ogi-Gittins et al., which gives rise to new approach.
+
+Add in schematic describing method, as well as simple explanation that if we do the same as Method 1 but accept all simulations above the data.
+
+*SS4*: Outbreak data-sets. A) Simulated data, B) Real-world data C) Real-world data that is manipulated
+
+P1: Test on large number of epidemics in simulate data, and compare to Epi-Estim and Ogi-Gittins et al. Seek to compare single inference, large-scale differences and the effect of $\rho$.
+
+P2: Compare to Ogi-Gittins et al. (with simple scaling) on RWD to see if the scaling is a worthy approach.
+
+P3: Then look at influence of different values of $\rho$ for real-world data.
 
 # Results
 
+See above
 
 # Conclusions
+
+Adding in point of beta-binomial likelihood
