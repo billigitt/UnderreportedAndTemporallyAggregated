@@ -57,7 +57,7 @@ meanAndCredibleAllRhoMatrix(:, 3, 9) = realWorldInferenceEbolaRho9.upperRt;
 figure
 subplot(2, 2, 1)
 
-bh = bar(realWorldInferenceEbolaRho1.date, [realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI], 'stacked', 'BarWidth', 1);
+bh = bar(realWorldInferenceEbolaRho1.date, [realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI], 'stacked', 'BarWidth', 1, 'EdgeColor', 'none');
 xlabel('Time (\itt \rmweeks)')
 ylabel('Incidence')
 set(bh, 'FaceColor', 'Flat')
@@ -68,7 +68,7 @@ box off
 ylim([0 500])
 subplot(2, 2, 2)
 
-bh = bar(realWorldInferenceEbolaRho1.date, [realWorldInferenceEbolaRho1.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldInferenceEbolaRho1.reportedWeeklyI], 'stacked', 'BarWidth', 1);
+bh = bar(realWorldInferenceEbolaRho1.date, [realWorldInferenceEbolaRho1.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldInferenceEbolaRho1.reportedWeeklyI], 'stacked', 'BarWidth', 1, 'EdgeColor', 'none');
 xlabel('Time (\itt \rmweeks)')
 ylabel('Incidence')
 set(bh, 'FaceColor', 'Flat')
@@ -82,7 +82,7 @@ ylim([0 500])
 subplot(2, 2, 3)
 
 
-bh = bar(realWorldInferenceEbolaRho1.date, [realWorldInferenceEbolaRho9.reportedWeeklyI, realWorldInferenceEbolaRho9.trueWeeklyI - realWorldInferenceEbolaRho9.reportedWeeklyI], 'stacked', 'BarWidth', 1);
+bh = bar(realWorldInferenceEbolaRho1.date, [realWorldInferenceEbolaRho9.reportedWeeklyI, realWorldInferenceEbolaRho9.trueWeeklyI - realWorldInferenceEbolaRho9.reportedWeeklyI], 'stacked', 'BarWidth', 1, 'EdgeColor', 'none');
 xlabel('Time (\itt \rmweeks)')
 ylabel('Incidence')
 set(bh, 'FaceColor', 'Flat')

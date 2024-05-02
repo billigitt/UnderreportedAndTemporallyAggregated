@@ -36,17 +36,17 @@ numWeeks = T;
 %%
 figure
 subplot(1, 2, 1)
-bar(1:102, realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, 'BarWidth', 1)
+bar((realWorldNovelInferenceEbolaSingleRho04.date)', realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, 'BarWidth', 1, 'EdgeColor', 'none')
 xlabel('Time (\itt\rm weeks)')
-ylabel('Reported Incidence')
+ylabel('Reported incidence')
 box off
 
 subplot(1, 2, 2)
-p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], (2:T)', colourMat(2, :), '', '');
+p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(2, :), '', '');
 hold on
-p2 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleRho04.upperRt(2:end)], (2:102)', colourMat(3,:), '', '');
+p2 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(3,:), '', '');
 xlabel('Time (\itt\rm weeks)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
-legend([p1, p2], 'Naive Ogi-Gittins et al.', '\itM\rm = 100,000')
-xlim([0 25])
+legend([p1, p2], "Simulation base"+newline+"(no under-reporting)", "Simulation based"+newline+"(under-reporting)")
+xlim([realWorldNovelInferenceEbolaSingleRho04.date(1) realWorldNovelInferenceEbolaSingleRho04.date(end)])
 % set(gcf, 'color', 'none') ;

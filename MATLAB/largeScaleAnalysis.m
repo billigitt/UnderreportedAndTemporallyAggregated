@@ -255,7 +255,7 @@ xlim([0 1])
 ylim([0 80])
 xticks(0.1:0.1:0.9)
 xlim([0.05 0.95])
-ylabel('Error (%)')
+ylabel('Relative error (%)')
 xlabel('Reporting rate, \rho')
 
 
