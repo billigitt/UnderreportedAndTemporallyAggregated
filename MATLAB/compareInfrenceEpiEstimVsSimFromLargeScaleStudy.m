@@ -22,7 +22,7 @@ set(0, 'DefaultTextInterpreter', 'tex')
 addpath('ownEpiEstim')
 
 load('../MATs/robustnessCheckFromLargeScaleStudy.mat')
-load('../MATs/largeScaleStudy.mat')
+load('../MATs/noLimitNewMethodPrior1And3.mat')
 load('../MATs/SIWeekly.mat')
 
 % colour scheme: blue (row 1) is EpiEstim, red (row 2) is original method
@@ -30,11 +30,16 @@ load('../MATs/SIWeekly.mat')
 % 
 colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.5*0.4660 0.5*0.6740 0.5*0.1880]; 
 
-trueR = largeScaleStudy.trueR(24:33);
+i = 40;
+
+rIdx = 2+11*(9*i+4):11+11*(9*i+4);
+incidenceIdx = 1+11*(9*i+4):11+11*(9*i+4);
+
+trueR = noLimitNewMethodPrior1And3.trueR(rIdx);
 
 % own Inference
 
-inputStruct = struct('PriorPar', [1 3], 'W', [0; SIWeekly.wWeekly]', 'I', largeScaleStudy.reportedWeeklyI(23:33)', 'tau', 1);
+inputStruct = struct('PriorPar', [1 3], 'W', [0; SIWeekly.wWeekly]', 'I', noLimitNewMethodPrior1And3.reportedWeeklyI(incidenceIdx)', 'tau', 1);
 
 outputStruct = R_Time_Series_EpiEstim(inputStruct);
 
@@ -45,10 +50,10 @@ outputStruct = R_Time_Series_EpiEstim(inputStruct);
 figure
 tile = tiledlayout(1, 2);
 nexttile
-bar(largeScaleStudy.reportedWeeklyI(23:33), 'BarWidth', 1)
+bar(noLimitNewMethodPrior1And3.reportedWeeklyI(incidenceIdx), 'BarWidth', 1)
 ylabel('Reported incidence')
 xlabel('Time (\itt \rmweeks)')
-xlim([0.25 11.75])
+xlim([0.25 11.5])
 xticks(1:11)
 box off
 nexttile
@@ -88,7 +93,7 @@ legend('\itM\rm\fontsize{9} \fontsize{15}=\fontsize{1} \fontsize{15}1,000', '\it
 xlabel('Time (\itt \rmweeks)')
 ylabel('Mean \itR\fontsize{14}t')
 xlim([3.5 11.5])
-ylim([0 11])
+ylim([0 12])
 
 subplot(1, 3,2)
 boxchart(Table.week(idxIncluded), Table.lowerRt(idxIncluded), 'GroupByColor', Table.M(idxIncluded))
@@ -98,7 +103,7 @@ plot(Table.week(4:T), trueR(3:end), 'DisplayName', 'True $R_t$', 'color', 'black
 xlabel('Time (\itt \rmweeks)')
 ylabel('2.5^{th} \itR\fontsize{14}t \fontsize{18}\rmpercentile')
 xlim([3.25 11.75])
-ylim([0 11])
+ylim([0 12])
 
 subplot(1, 3,3)
 boxchart(Table.week(idxIncluded), Table.upperRt(idxIncluded), 'GroupByColor', Table.M(idxIncluded))
@@ -108,6 +113,6 @@ plot(Table.week(4:T), trueR(3:end), 'DisplayName', 'True $R_t$', 'color', 'black
 xlabel('Time (\itt \rmweeks)')
 ylabel('97.5^{th} \itR\fontsize{14}t \fontsize{18}\rmpercentile')
 xlim([3.5 11.5])
-ylim([0 11])
+ylim([0 12])
 
 

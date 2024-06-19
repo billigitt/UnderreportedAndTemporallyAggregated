@@ -1,15 +1,3 @@
-#import Pkg;
-#Pkg.add("ProgressMeter")
-#Pkg.add("Profile")
-#Pkg.add("ProfileView")
-#Pkg.add("Trapz")
-#Pkg.add("QuadGK")
-#Pkg.add("Random")
-#Pkg.add("Debugger")
-#kg.add("JuliaInterpreter")
-#Pkg.add("CSV")
-#Pkg.add("DataFrames")
-#Pkg.add("Tables")
 
 import Pkg
 Pkg.add(["QuadGK", "Distributions", "StatsBase", "Random", "DataFrames", "CSV", "Dates", "Distributed", "SharedArrays", "ProgressMeter", "Trapz", "Debugger", "JuliaInterpreter", "Tables", "Plots"])
@@ -29,7 +17,7 @@ Random.seed!(1)
     using Trapz, DataFrames, ProgressMeter
     include("juliaUnderRepFunctions.jl")
     T = 11
-    nEpidemics =Int(1e3)
+    nEpidemics = Int(1e1)
     probReported = 0.1:0.1:0.9 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
 # this 0.4 value is also corroborated in doi: 10.1371/journal.pntd.0006161 (Dalziel, unreported cases in Ebola)
 probsConsidered = length(probReported)
@@ -65,7 +53,7 @@ wTrue = siCalcNew(wContGamPar, trueP, nWeeksForSI, divisionsPerP)
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
 PoissonOrRound = "P" # P/R
 
-priorRShapeAndScale = [1 3]
+priorRShapeAndScale = [1 2]
 
 
 defaultM = Int(1e5)
@@ -87,7 +75,7 @@ incidenceOutput = generateIncidenceVaryRho(day1I, trueWeeklyR, wTrue, PoissonOrR
 reportedWeeklyI = get(incidenceOutput, "reportedWeeklyI", 0)
 weeklyI = get(incidenceOutput, "weeklyI", 0)
 
-if (sum(reportedWeeklyI .== 0) == 0) & (maximum(reportedWeeklyI) < 10000)
+if (sum(reportedWeeklyI .== 0) == 0) & (maximum(reportedWeeklyI) < 500)
     k += 1
     println(k)
     println(reportedWeeklyI)
@@ -119,4 +107,4 @@ end
 end
 
 
-CSV.write("largeScaleStudyCluster.csv", dfNew)
+CSV.write("largeScaleStudyClusterMaxInc500.csv", dfNew)

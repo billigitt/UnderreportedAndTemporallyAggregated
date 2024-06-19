@@ -9,28 +9,28 @@ include("juliaUnderRepFunctions.jl")
 
 Random.seed!(1)
 
-inferenceBatch1 = CSV.read("CSVs/largeScaleStudy.csv", DataFrame)
-
-reportedWeeklyI = inferenceBatch1.reportedWeeklyI[23:33]
-weeklyI = inferenceBatch1.weeklyI[23:33]
+inferenceBatch1 = CSV.read("CSVs/noLimitNewMethodPrior1And3.csv", DataFrame)
+ii = 40
+reportedWeeklyI = inferenceBatch1.reportedWeeklyI[(1+11*(9*13+4)):(11+11*(9*13+4))]
+weeklyI = inferenceBatch1.weeklyI[(1+11*(9*13+4)):(11+11*(9*13+4))]
 
 T = length(reportedWeeklyI)
 
 trueP = 7
 defaultP = 7
 #the following parameters must be for a weekly parameterisation of the serial interval. The choice of defaultP then corrects this.
-wContGamPar = [2.71, 5.65/7] #https://royalsocietypublishing.org/doi/epdf/10.1098/rsif.2023.0374 shape = 15.3^2/9.3^2, scale = 9.3^2/15.3  because (mean, std) = (15.3, 9.3)
+wContGamPar = [15.3^2/9.3^2, 9.3^2/(15.3*7)] #https://royalsocietypublishing.org/doi/epdf/10.1098/rsif.2023.0374 shape = 15.3^2/9.3^2, scale = 9.3^2/15.3  because (mean, std) = (15.3, 9.3)
 nWeeksForSI = 10
 divisionsPerP = Int(1e2)
 
 wTrue = siCalcNew(wContGamPar, trueP, nWeeksForSI, divisionsPerP)
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
 PoissonOrRound = "P" # P/R
-probReported = 0.53 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
+probReported = 0.4 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
 # this 0.4 value is also corroborated in doi: 10.1371/journal.pntd.0006161 (Dalziel, unreported cases in Ebola)
 
 defaultM = 1000
-priorRShapeAndScale = [1 5]
+priorRShapeAndScale = [1 3]
 maxIter = defaultM*10
 
 criCheck = true
@@ -54,7 +54,7 @@ for i in 1:numInf
 
         println(i)
 
-        x = inferUnderRepAndTempAggR(reportedWeeklyI, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, criCheck)
+        x = inferUnderRepAndTempAggR(reportedWeeklyI, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, Inf)
 
         df1a.meanRt[(i-1)*T+1:i*T] = vec(x["means"])
         df1a.lowerRt[(i-1)*T+1:i*T] = x["cri"][:, 1]
@@ -87,7 +87,7 @@ for i in 1:numInf
 
         println(i)
 
-        y = inferUnderRepAndTempAggR(reportedWeeklyI, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, criCheck)
+        y = inferUnderRepAndTempAggR(reportedWeeklyI, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, Inf)
 
         df1b.meanRt[(i-1)*T+1:i*T] = vec(y["means"])
         df1b.lowerRt[(i-1)*T+1:i*T] = y["cri"][:, 1]
@@ -120,7 +120,7 @@ for i in 1:numInf
 
         println(i)
 
-        z = inferUnderRepAndTempAggR(reportedWeeklyI, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, criCheck)
+        z = inferUnderRepAndTempAggR(reportedWeeklyI, wAssumed, priorRShapeAndScale, probReported, defaultM, defaultP, maxIter, Inf)
 
         df1c.meanRt[(i-1)*T+1:i*T] = vec(z["means"])
         df1c.lowerRt[(i-1)*T+1:i*T] = z["cri"][:, 1]

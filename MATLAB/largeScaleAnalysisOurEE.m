@@ -17,13 +17,13 @@ set(0, 'defaultUipanelFontName', 'aakar');
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
-load('../MATs/largeScaleStudyCluster.mat')
+load('../MATs/noLimitNewMethodPrior1And3.mat')
 % load('../MATs/epiEstimImperfectInfoLargeScaleStudy.mat')
 load('../MATs/SIWeekly.mat')
 
 addpath('ownEpiEstim')
 
-largeScaleStudyRaw = largeScaleStudyCluster;
+largeScaleStudyRaw = noLimitNewMethodPrior1And3;
 
 T = 11;
 

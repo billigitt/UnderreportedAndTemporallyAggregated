@@ -17,7 +17,7 @@ Pkg.add(["QuadGK", "Distributions", "StatsBase", "Random", "DataFrames", "CSV", 
 
 using Debugger, JuliaInterpreter, Trapz, CSV, DataFrames, Tables, Plots, Distributed, ProgressMeter, Random
 
-addprocs(4)
+addprocs(24)
 Random.seed!(1)
 
 # Simulate Ebola epidemic. First phase (R=10) is highly transmissible, then quite (R=1.5), then low (R=0.75).
@@ -29,7 +29,7 @@ Random.seed!(1)
     using Trapz, DataFrames, ProgressMeter
     include("juliaUnderRepFunctions.jl")
     T = 11
-    nEpidemics =Int(4)
+    nEpidemics = Int(1e3)
     probReported = 0.1:0.1:0.9 # comes from https://www.cdc.gov/mmwr/preview/mmwrhtml/su6303a1.htm?s_cid-su6303a1_w#Appendix-tab4 Table 4, see correction factor
 # this 0.4 value is also corroborated in doi: 10.1371/journal.pntd.0006161 (Dalziel, unreported cases in Ebola)
 probsConsidered = length(probReported)
@@ -65,11 +65,11 @@ wTrue = siCalcNew(wContGamPar, trueP, nWeeksForSI, divisionsPerP)
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
 PoissonOrRound = "P" # P/R
 
-priorRShapeAndScale = [1 3]
+priorRShapeAndScale = [1 2]
 
 
 defaultM = Int(1e3)
-maxIter = defaultM*10
+maxIter = defaultM*100
 criCheck = true
 
 reportedIncidenceMatrix = zeros(nEpidemics*probsConsidered, T)
@@ -118,4 +118,4 @@ end
 
 end
 
-CSV.write("largeScaleStudyOriginalMethodTest.csv", dfNew)
+CSV.write("largeScaleStudyOriginalMethodClusterMaxInc500.csv", dfNew)

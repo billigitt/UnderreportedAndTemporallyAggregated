@@ -24,7 +24,13 @@ load('../MATs/realWorldNovelInferenceEbolaSingleNaiveRho04.mat')
 % colour scheme: blue (row 1) is EpiEstim, red (row 2) is original method
 % (temp agg), green (row 3) is new method (temp agg + under-rep)
 % 
-colourMat = [0 0.4470 0.7410; 0.8500 0.3250 0.0980; 0.5*0.4660 0.5*0.6740 0.5*0.1880];
+colourMat = [0.9 0.6 0;... %orange 1
+    0.35 0.7 0.9;... %sky blue 2
+    0 0.6 0.5;... %blueish green 3
+    0.9290 0.6940 0.1250;... %yellow 4
+    0 0.44 0.7;... %blue 5
+    0.8 0.4 0;... %red 6
+    0.4940 0.1840 0.5560]; % purple 7
 
 T = 102;
 
@@ -33,20 +39,37 @@ T = 102;
 
 numWeeks = T;
 
+cri95WidthThreshold = (icdf('Gamma', 0.975, 1, 3) - icdf('Gamma', 0.025, 1, 3))*0.5;
+
 %%
 figure
-subplot(1, 2, 1)
-bar((realWorldNovelInferenceEbolaSingleRho04.date)', realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, 'BarWidth', 1, 'EdgeColor', 'none')
-xlabel('Time (\itt\rm weeks)')
+tile = tiledlayout(1, 2);
+nexttile
+bar((realWorldNovelInferenceEbolaSingleNaiveRho04.date)', realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, 'BarWidth', 1, 'EdgeColor', 'none')
+xlabel('Date (mm/yy)')
 ylabel('Reported incidence')
+
+xlim([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])
+xticks([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])
+xticklabels(datestr([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)], 'mm/yy'))
+xtickangle(60);
 box off
 
-subplot(1, 2, 2)
-p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(2, :), '', '');
+nexttile
+p2 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(7,:), '', '');
 hold on
-p2 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(3,:), '', '');
-xlabel('Time (\itt\rm weeks)')
+p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(1, :), '', '');
+xlabel('Date (mm/yy)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
-legend([p1, p2], "Simulation base"+newline+"(no under-reporting)", "Simulation based"+newline+"(under-reporting)")
-xlim([realWorldNovelInferenceEbolaSingleRho04.date(1) realWorldNovelInferenceEbolaSingleRho04.date(end)])
-% set(gcf, 'color', 'none') ;
+legend([p1, p2], "Simulation based"+newline+"(naive under-reporting)", "Simulation based"+newline+"(under-reporting)", 'Location', 'North')
+xtickangle(60)
+xlim([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])
+xticks([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])
+xticklabels(datestr([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)], 'mm/yy'))
+
+% 
+tile.Padding  = 'compact';
+tile.TileSpacing = 'compact';
+
+set(gcf,'Position',[100 100 1150 500])
+set(gcf, 'color', 'none')

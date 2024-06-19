@@ -1,0 +1,13 @@
+files = dir('../CSVs/largeScaleStudyClusterMaxInc500/*.csv');
+A = readtable(['../CSVs/largeScaleStudyClusterMaxInc500/', files(1).name]);
+%%
+batchSize = 990;
+A = A[1:batchSize, :]
+numfiles = length(files);
+for k=2:numfiles
+filename = ['../CSVs/largeScaleStudyClusterMaxInc500/', files(k).name];
+T = readtable(filename);
+T = T[((k-1)*batchSize+1):k*batchSize, :)
+A = vertcat(A, T);
+end
+writetable(A, 'largeScaleStudyNewClusterMaxInc500Prior1-3FirstDay1.csv');

@@ -1,0 +1,11 @@
+ERROR: LoadError: BoundsError: attempt to access 990-element Vector{Int64} at index [98011:98021]
+Stacktrace:
+ [1] throw_boundserror(A::Vector{Int64}, I::Tuple{UnitRange{Int64}})
+   @ Base ./abstractarray.jl:703
+ [2] checkbounds
+   @ ./abstractarray.jl:668 [inlined]
+ [3] getindex(A::Vector{Int64}, I::UnitRange{Int64})
+   @ Base ./array.jl:930
+ [4] top-level scope
+   @ ~/Documents/UnderreportedAndTemporallyAggregatedZilla/julia/largeScaleStudySLURMNewFinalMaxInc5e2.jl:73
+in expression starting at /home/zakgittins/Documents/UnderreportedAndTemporallyAggregatedZilla/julia/largeScaleStudySLURMNewFinalMaxInc5e2.jl:66

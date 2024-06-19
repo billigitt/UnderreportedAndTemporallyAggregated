@@ -1,15 +1,22 @@
 ---
 title: "Time-dependent Reproduction Numbers: Temporal Aggregation and Under-reporting"
 author: "Zak OG"
-date: "2024-04-23"
+date: "2024-06-12"
 output:
-  beamer_presentation: default
   slidy_presentation: default
+  ioslides_presentation: default
+  beamer_presentation: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
+# Reproduction is great!
+
+<p align="center">
+    <img src="../../../Downloads/IMG_1628.jpg" alt="Milo" width="400">
+</p>
 
 # Why bother with $R_t$?
 
@@ -102,7 +109,7 @@ If $R_t \sim \Gamma(a, b)$ and $I_t|I_1^{t-1}, R_t \sim \mathrm{Poi}(R_t\sum_{s=
 # Method accounting for temporally aggregated incidence: Exact ABC [^4]
 
 <p align="center">
-    <img src="archive/schematic1.png" alt="GenerationLength" width="800">
+    <img src="archive/schematic1.png" alt="GenerationLength" width="600">
 </p>
 
 [^4]: *Ogi-Gittins et al. A simulation-based approach for estimating the time-dependent reproduction number from temporally aggregated disease incidence time series data,  2024
@@ -119,35 +126,16 @@ If $R_t \sim \Gamma(a, b)$ and $I_t|I_1^{t-1}, R_t \sim \mathrm{Poi}(R_t\sum_{s=
     <img src="archive/originalMethodRWD.png" alt="My Image" width="400">
 </p>
 
-
 # Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
 
 <p align="center">
-    <img src="figs/processing/schematic1.svg" alt="My Image" width="800">
-</p>
-
-# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
-
-<p align="center">
-    <img src="figs/processing/schematic2.svg" alt="My Image" width="800">
-</p>
-
-# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
-
-<p align="center">
-    <img src="figs/processing/schematic3.svg" alt="My Image" width="800">
-</p>
-
-# Method accounting for temporally aggregated incidence and under-reporting: Weighting with Binomial likelihoods
-
-<p align="center">
-    <img src="figs/processing/schematic4.svg" alt="My Image" width="800">
+    <img src="figs/processing/schematicPostOxford.svg" alt="My Image" width="600">
 </p>
 
 # Results
 
 <p align="center">
-    <img src="figs/sectionOldVsNew/oldVSNewPres.svg" alt="My Image" width="800" >
+    <img src="figs/sectionOldVsNew/MicrosoftTeams-image.png" alt="My Image" width="500" >
 </p>
 
 
@@ -160,8 +148,14 @@ If $R_t \sim \Gamma(a, b)$ and $I_t|I_1^{t-1}, R_t \sim \mathrm{Poi}(R_t\sum_{s=
 # Results
 
 <p align="center">
-    <img src="figs/archive/largeScaleStudyByRho.svg" alt="My Image" width="1000">
+    <img src="figs/sectionEffectOfRho/increasingRhoIsGood.svg" alt="My Image" width="1000">
 </p>
+
+# Conclusions
+
+- $R_t$ inference not accounting for temporally aggregated incidence can lead to large errors in $R_t$ inference
+- $R_t$ inference accounting for temporally aggregated incidence but not under-reporting can lead to incorrect coverage
+- We can solve both problems with these simulation-based approaches, and the latter approach can improve speed!
 
 # Thank you!
 

@@ -6,7 +6,7 @@ function p = plotMeanAndCredible(mean, credible, time, color, label1, label2)
     
     hold on
     g = fill(timeFlip, credibleInterval, color , 'DisplayName', label2);
-    set(g, 'facealpha', 0.5)
+    set(g, 'facealpha', 0.75)
     set(g,'EdgeColor','none')
     p = plot(time, mean, 'color', color, 'DisplayName', label1);
     

@@ -235,7 +235,7 @@ function inferUnderRepAndTempAggRNaive(weeklyRepI, w, priorRShapeScale, rho, M, 
     
     end
 
-function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, criCheck)
+function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, maxEntireIterations)
 
 #remove criCheck?
     totalWeeks = length(weeklyRepI)
@@ -324,6 +324,8 @@ function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, ma
             
             iter += 1
 
+            ((sum(totalIterations[1:(t-1)])+ iter + (k - 1) * maxIter) > maxEntireIterations) && break
+
             if ((iter == maxIter) & (acc < M))
 
                 println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
@@ -338,11 +340,15 @@ function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, ma
         runTime[t] = (stop_time - st_time) / 1e9
         totalIterations[t] = iter + (k - 1) * maxIter
 
+        (acc < M) && break
+
     end
 
     #calculate summary statistics
     means = sum(rPosterior .* likelihood, dims=2) ./ sum(likelihood, dims=2)
     means[1] = NaN
+
+    means[means.==0] .= NaN
 
     cri = fill(NaN, totalWeeks, 2)
     for i in 2:totalWeeks
@@ -354,7 +360,7 @@ function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, ma
 
 end
 
-function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
+function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter, maxEntireIterations)
 
     #remove criCheck?
         totalWeeks = length(weeklyRepI)
@@ -364,7 +370,7 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
         storedI = zeros(Int, P*totalWeeks, M)
         storedITimet = storedI
         sampleI = zeros(Int, P*totalWeeks, maxIter)
-        rPosterior = ones(totalWeeks, M)
+        rPosterior = zeros(totalWeeks, M)
     
         runTime = zeros(totalWeeks)
         totalIterations = zeros(totalWeeks)
@@ -409,6 +415,10 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
                 
                 iter += 1
     
+                # following line breaks out of while loop if we exceed the maximum number of iterations over the entire time period
+                ((sum(totalIterations[1:(t-1)])+ iter + (k - 1) * maxIter) > maxEntireIterations) && break
+                
+
                 if ((iter == maxIter) & (acc < M))
     
                     println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
@@ -426,6 +436,9 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
             stop_time = time_ns()
             runTime[t] = (stop_time - st_time) / 1e9
             totalIterations[t] = iter + (k - 1) * maxIter
+
+            #this line checks if we broke out of the while loop at this time step, and so we then break out of the for loop as well if so
+            (acc < M) && break
     
         end
     
@@ -433,6 +446,9 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter)
         means = sum(rPosterior, dims=2)/M
         means[1] = NaN
     
+        # if we broke out of the while loop, the mean will be exactly zero
+        means[means.==0] .= NaN
+
         cri = fill(NaN, totalWeeks, 2)
         for i in 2:totalWeeks
             cri[i, 1] = quantile(rPosterior[i, :], 0.025)

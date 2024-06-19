@@ -22,6 +22,16 @@ set(0, 'DefaultTextInterpreter', 'tex')
 load('../MATs/realWorldInferenceEbolaAllRho.mat')
 load('../MATs/realWorldNovelInferenceEbolaSingleRho04.mat')
 
+colourMat = [0.9 0.6 0;... %orange 1
+    0.35 0.7 0.9;... %sky blue 2
+    0 0.6 0.5;... %blueish green 3
+    0.9290 0.6940 0.1250;... %yellow 4
+    0 0.44 0.7;... %blue 5
+    0.8 0.4 0;... %red 6
+    0.4940 0.1840 0.5560]; % purple 7
+
+realWorldInferenceEbolaRho1.date = datetime(realWorldInferenceEbolaRho1.date,'InputFormat','dd-MM-yy ');
+
 meanAndCredibleAllRhoMatrix = zeros(max(realWorldInferenceEbolaRho1.week), 3, 9); % 3D matrix with 1st dim being time, 2nd dim being means, lower percentiles and upper percentiles, and 3rd dim being rho.
 
 meanAndCredibleAllRhoMatrix(:, 1, 1) = realWorldInferenceEbolaRho1.meanRt;
@@ -55,10 +65,10 @@ meanAndCredibleAllRhoMatrix(:, 3, 8) = realWorldInferenceEbolaRho8.upperRt;
 meanAndCredibleAllRhoMatrix(:, 3, 9) = realWorldInferenceEbolaRho9.upperRt;
 
 figure
-subplot(2, 2, 1)
-
+tile = tiledlayout(2, 2);
+nexttile
 bh = bar(realWorldInferenceEbolaRho1.date, [realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldNovelInferenceEbolaSingleRho04.reportedWeeklyI], 'stacked', 'BarWidth', 1, 'EdgeColor', 'none');
-xlabel('Time (\itt \rmweeks)')
+xlabel('Date (mm/yy)')
 ylabel('Incidence')
 set(bh, 'FaceColor', 'Flat')
 bh(2).CData = [0.5 0.5 0.5];
@@ -66,27 +76,37 @@ bh(2).CData = [0.5 0.5 0.5];
 legend('Actual reported', 'Simulated hidden')
 box off
 ylim([0 500])
-subplot(2, 2, 2)
-
+xtickangle(60);
+xlim([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(end)])
+xticks([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)])
+xticklabels(datestr([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)], 'mm/yy'))
+nexttile
 bh = bar(realWorldInferenceEbolaRho1.date, [realWorldInferenceEbolaRho1.reportedWeeklyI, realWorldInferenceEbolaRho1.trueWeeklyI - realWorldInferenceEbolaRho1.reportedWeeklyI], 'stacked', 'BarWidth', 1, 'EdgeColor', 'none');
-xlabel('Time (\itt \rmweeks)')
+xlabel('Date (mm/yy)')
 ylabel('Incidence')
 set(bh, 'FaceColor', 'Flat')
-bh(1).CData = [0.9290 0.6940 0.1250];
+bh(1).CData = colourMat(4, :);
 bh(2).CData = [0.5 0.5 0.5];
 bh(2).FaceAlpha = 0.5;
+
+datetick('x', 'mm/yy');
+xtickangle(60);
 
 legend('Simulated reported (\rho = 0.1)', 'Simulated hidden')
 box off
 ylim([0 500])
-subplot(2, 2, 3)
+xtickangle(60);
+xlim([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(end)])
+xticks([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)])
+xticklabels(datestr([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)], 'mm/yy'))
+nexttile
 
 
 bh = bar(realWorldInferenceEbolaRho1.date, [realWorldInferenceEbolaRho9.reportedWeeklyI, realWorldInferenceEbolaRho9.trueWeeklyI - realWorldInferenceEbolaRho9.reportedWeeklyI], 'stacked', 'BarWidth', 1, 'EdgeColor', 'none');
-xlabel('Time (\itt \rmweeks)')
+xlabel('Date (mm/yy)')
 ylabel('Incidence')
 set(bh, 'FaceColor', 'Flat')
-bh(1).CData = [0.4940 0.1840 0.5560];
+bh(1).CData = colourMat(7, :);
 bh(2).CData = [0.5 0.5 0.5];
 bh(2).FaceAlpha = 0.5;
 legend('Simulated reported (\rho = 0.9)', 'Simulated hidden')
@@ -96,16 +116,34 @@ box off
 % xlabel('Time (days)')
 % ylabel('Rt')
 ylim([0 500])
-subplot(2, 2, 4)
+xtickangle(60);
+xlim([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(end)])
+xticks([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)])
+xticklabels(datestr([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)], 'mm/yy'))
+nexttile
 p(1) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 1), [meanAndCredibleAllRhoMatrix(2:end, 2, 1), meanAndCredibleAllRhoMatrix(2:end, 3, 1)], realWorldInferenceEbolaRho1.date(2:end), [0.9290 0.6940 0.1250], 'a', 'b');
 hold on
 p(3) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 9), [meanAndCredibleAllRhoMatrix(2:end, 2, 9), meanAndCredibleAllRhoMatrix(2:end, 3, 9)], realWorldInferenceEbolaRho1.date(2:end), [0.4940 0.1840 0.5560], 'a3', 'b3');
-xlabel('Time (\itt\rm weeks)')
+xlabel('Date (mm/yy)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
 legend(p([1 3]), '\rho = 0.1', '\rho = 0.9')
 %xlim([0 102.5])
+%datetick('x', 'mm/yy');
+xtickangle(60);
 xlim([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(end)])
+xticks([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)])
+xticklabels(datestr([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)], 'mm/yy'))
+yticks(0:4:16)
+ylim([0 16])
+
+% datetick('x', 'mm/yy');
+set(gcf,'Position',[100 100 1150 800])
+set(gcf, 'color', 'none') ;
 box off
+
+tile.Padding  = 'compact';
+tile.TileSpacing = 'compact';
+
 % figure
 % p(1) = plotMeanAndCredibleNoFill(meanAndCredibleAllRhoMatrix(2:end, 1, 1), [meanAndCredibleAllRhoMatrix(2:end, 2, 1), meanAndCredibleAllRhoMatrix(2:end, 3, 1)], (2:75)', 'red', 'a');
 % hold on
