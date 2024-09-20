@@ -29,7 +29,7 @@ Code for the analysis to generate figure S1 can be found in "julia/robustnessChe
 
 ## Terminology
 
-$\rho$: Under-reporting
+$\rho$: Reporting probability
 $I_t$: True incidence at time $t$
 $\hat{I}_t$: Reported incidence at time $t$
 $M$: Acceptance threshold in ABC algorithm
