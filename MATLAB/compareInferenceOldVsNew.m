@@ -32,7 +32,7 @@ colourMat = [0.9 0.6 0;... %orange 1
     0.8 0.4 0;... %red 6
     0.4940 0.1840 0.5560]; % purple 7
 
-T = 102;
+T = 103;
 
 % VarName8 gives the reported incidence, VarName9 gives the hidden
 % incidence
@@ -61,7 +61,7 @@ hold on
 p1 = plotMeanAndCredible(realWorldNovelInferenceEbolaSingleNaiveRho04.meanRt(2:end), [realWorldNovelInferenceEbolaSingleNaiveRho04.lowerRt(2:end) realWorldNovelInferenceEbolaSingleNaiveRho04.upperRt(2:end)], realWorldNovelInferenceEbolaSingleRho04.date(2:end), colourMat(1, :), '', '');
 xlabel('Date (mm/yy)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
-legend([p1, p2], "Simulation based"+newline+"(naive under-reporting)", "Simulation based"+newline+"(under-reporting)", 'Location', 'North')
+legend([p1, p2], "OG1 method (with"+newline+"naive under-reporting)", "OG2 method", 'Location', 'North')
 xtickangle(60)
 xlim([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])
 xticks([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])

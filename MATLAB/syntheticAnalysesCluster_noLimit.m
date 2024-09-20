@@ -229,15 +229,16 @@ b.BoxFaceColor = colourMat(7, :);
 ylim([0 80])
 xlim([0 1])
 ylabel('Relative error (%)')
-xlabel('Reporting rate, \rho')
+xlabel('Reporting probability, \rho')
 xticks(0:0.2:1)
+
 
 nexttile
 b = boxchart(rho(idxIncludeNew), upperRNew(idxIncludeNew) - lowerRNew(idxIncludeNew), 'BoxWidth', 0.05, 'MarkerStyle', 'none');
 b.BoxFaceColor = colourMat(7, :);
 xlim([0 1])
 ylabel('95% CrI width')
-xlabel('Reporting rate, \rho')
+xlabel('Reporting probability, \rho')
 xticks(0:0.2:1)
  
 % nexttile
@@ -258,29 +259,32 @@ xticks(0:0.2:1)
 %     'Location', 'SouthWest')
 % box off
 set(gcf,'Position',[100 100 1150 500])
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
 
 tile.Padding  = 'compact';
 tile.TileSpacing = 'compact';
 
+%%
 figure
-tile = tiledlayout(1, 2);
-nexttile
-h(1) = histogram(entireItM1e4OG, 'Normalization', 'probability', 'FaceColor', colourMat(1,:), 'BinWidth', 1e6);
+subplot(1, 2, 1);
+% nexttile
+h(1) = histogram(entireItM1e4OG, 'Normalization', 'probability', 'FaceColor', colourMat(1,:), 'BinWidth', 1e6, 'LineStyle', 'none');
 hold on
-h(2) = histogram(entireItM1e4New, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinWidth', 1e6);
+h(2) = histogram(entireItM1e4New, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinWidth', 1e6, 'LineStyle', 'none');
 xlabel('Number of simulated weeks')
-ylabel(""+newline+"Percentage of model"+newline+"fits completed (%)")
+ylabel(""+newline+"Percentage of"+newline+"model fits (%)")
 yticks(0:0.2:1)
 xticks([0:5e6:1e7, 1.05e7])
 yticklabels({'0', '20', '40', '60', '80', '100'})
 xticklabels({'0', '5\times10^6', '', '\geq10^7'})
 ylim([0 1])
+legend(h([1 2]), "\fontsize{17}OG1 method", "\fontsize{17}OG2 method", 'Location', 'North')
+xtickangle(0)
 box off
-nexttile
-h(1) = histogram(100*coverageOGByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(1,:), 'BinEdges', -0:10:100);
+subplot(1, 2, 2)
+h(1) = histogram(100*coverageOGByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(1,:), 'BinEdges', -0:100/11:100, 'LineStyle', 'none');
 hold on
-h(2) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7,:), 'BinEdges', -0:10:100);
+h(2) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7,:), 'BinEdges', -0:100/11:100, 'LineStyle', 'none');
 
 xline(100*mean(coverageNewByEpi), '--','color', colourMat(7, :), 'LineWidth', 2)
 xline(100*mean(coverageOGByEpi), '--', 'color', colourMat(1, :), 'LineWidth', 2)
@@ -290,14 +294,15 @@ yticks(0:0.2:1)
 yticklabels({'0', '20', '40', '60', '80', '100'})
 xticks(0:10:100)
 xticklabels({'0', '', '20', '', '40', '', '60', '', '80', '', '100'})
+xtickangle(0)
 xlim([0 100])
-legend(h([1 2]), "\fontsize{17}Simulation based"+newline+"(no under-reporting)", "\fontsize{17}Simulation based"+newline+"(under-reporting)", 'Location', 'NorthWest')
+legend(h([1 2]), "\fontsize{17}OG1 method", "\fontsize{17}OG2 method", 'Location', 'NorthWest')
 
 box off
-tile.Padding  = 'loose';
-tile.TileSpacing = 'loose';
+% tile.Padding  = 'compact';
+% tile.TileSpacing = 'compact';
 set(gcf,'Position',[100 100 1150 500])
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
 
 figure
 yline(95, 'k--', 'LineWidth', 1.5)
@@ -319,7 +324,7 @@ legend([ee og ur], "\fontsize{16}Cori (no"+newline+"\fontsize{16}under-reporting
 
 box off
 set(gcf,'Position',[100 100 750 500])
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
 
 
 % figure
@@ -335,7 +340,7 @@ set(gcf, 'color', 'none') ;
 figure
 tile = tiledlayout(2, 2);
 nexttile
-bar(1:11, noLimitNewMethodPrior1And3.reportedWeeklyI(1+11*(9*13+4):11+11*(9*13+4)), 'BarWidth', 1)
+bar(1:11, noLimitNewMethodPrior1And3.reportedWeeklyI(1+11*(9*13+4):11+11*(9*13+4)), 'BarWidth', 1, 'LineStyle','none')
 ylabel('\fontsize{22}Reported incidence')
 xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
 xlim([0.5 11.5])
@@ -343,6 +348,7 @@ xticks(1:11)
 xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
 ylim([0 1600])
 yticks(0:400:1600)
+xtickangle(0)
 box off
 nexttile
 x = plotMeanAndCredible(noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9*13+4)), ...
@@ -351,7 +357,7 @@ x = plotMeanAndCredible(noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9
 hold on
 y = plotMeanAndCredible(means(1+10*(9*13+4):10+10*(9*13+4)), cis(1+10*(9*13+4):10+10*(9*13+4), :), (2:11)', colourMat(2, :), 'mean', 'ci');
 z = plot(2:11, noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'k--');
-legend([x, y, z], "\fontsize{16}Simulation based"+newline+"\fontsize{16}(under-reporting)", "\fontsize{16}Cori (no"+newline+"\fontsize{16}under-reporting)", '\fontsize{16}True \itR\fontsize{12}t')
+legend([z, y, x], '\fontsize{16}True \itR\fontsize{12}t', "\fontsize{16}Cori method", "\fontsize{16}OG2 method")
 ylabel({'\fontsize{22}';'\fontsize{22}Time-dependent';'\fontsize{22}reproduction number (\itR\fontsize{16}t\fontsize{22}\rm)'})
 xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
 xlim([0.5 11.5])
@@ -360,11 +366,11 @@ yticks(0:4:16)
 yticklabels({'0', '4', '8', '12', '16'})
 xticks(1:11)
 xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
-
+xtickangle(0)
 nexttile
-histogram(100*errorNew(idxIncludeNew), 'Normalization', 'probability', 'FaceColor', colourMat(7, :))
+h(1) = histogram(100*errorNew(idxIncludeNew), 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'LineStyle','none');
 hold on
-histogram(100*errorEE(idxIncludeEE), 'Normalization', 'probability', 'FaceColor', colourMat(2, :))
+h(2) = histogram(100*errorEE(idxIncludeEE), 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'LineStyle','none');
 % xticks(0:25:100)
 % % xticklabels({'0', '25', '50', '75', '100'})
 yticks(0:0.05:0.25)
@@ -374,12 +380,15 @@ ylabel('\fontsize{22}Percentage of inferences (%)')
 % xline(mean(errorEE(idxIncludeEE))*100, '--', 'color', colourMat(1, :), 'LineWidth', 2)
 % xline(mean(errorNew(idxIncludeNew))*100, '--', 'color', colourMat(7, :), 'LineWidth', 2)
 xlim([-100 100])
-
+xtickangle(0)
+legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
 box off
+
+
 nexttile
-histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinEdges', 0:10:100)
+h(1) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
 hold on
-histogram(100*coverageEEByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'BinEdges', 0:10:100)
+h(2) = histogram(100*coverageEEByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
 % yticks(0:0.1:0.6)
 % yticklabels({'0', '10', '20', '30', '40', '50', '60'})
 xline(100*mean(coverageNewByEpi), '--','color', colourMat(7, :), 'LineWidth', 2)
@@ -391,13 +400,13 @@ xticks(0:10:100)
 xticklabels({'0', '', '20', '', '40', '', '60', '', '80', '', '100'})
 ylabel("\fontsize{22}Percentage of"+newline+"model fits (%)")
 xlabel('\fontsize{22}CrI coverage (%)')
-
-legend("\fontsize{18}Simulation based"+newline+"\fontsize{18}(under-reporting)", "\fontsize{18}Cori (no"+newline+"\fontsize{18}under-reporting)", 'Location', 'NorthWest')
+xtickangle(0)
+legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
 box off
 
 
 set(gcf,'Position',[100 100 1150 1150])
-set(gcf, 'color', 'none') ;
+% set(gcf, 'color', 'none') ;
 
 tile.Padding  = 'compact';
 tile.TileSpacing = 'compact';
@@ -510,7 +519,7 @@ for ii = 1:3
         
         xPt = jj + perturbation(ii);
         
-        plot([xPt xPt], [lowerTmp upperTmp], 'color', colours(ii, :), 'LineWidth', 3)
+        h(ii) = plot([xPt xPt], [lowerTmp upperTmp], 'color', colours(ii, :), 'LineWidth', 3);
         
     end
     
@@ -521,7 +530,11 @@ xticklabels({ '2', '', '4', '', '6', '', '8', '', '10', ''})
 yticks(0:2.5:12.5)
 ylim([0 12.5])
 xlabel('Time (\itt \rmweeks)')
-ylabel('Mean \itR\fontsize{16}t')
+ylabel('\fontsize{22}Mean \itR\fontsize{16}t \fontsize{22}\rmestimate')
+xtickangle(0)
+box off
+legend(h([1 2 3]), '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}1,000', '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}10,000', '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}100,000')
+
 nexttile
 plot(Table.week(2:T), noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)),...
     'DisplayName', 'True \itR\fontsize{12}t', 'color', 'black', 'LineStyle', '--', 'Marker', 'x')
@@ -549,8 +562,9 @@ xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
 yticks(0:2.5:12.5)
 ylim([0 12.5])
 xlabel('Time (\itt \rmweeks)')
-ylabel('2.5^{th} \itR\fontsize{16}t \fontsize{22}\rmpercentile')
-legend(h([1 2 3]), '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}1,000', '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}10,000', '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}100,000')
+ylabel('2.5^{th} percentile \itR\fontsize{16}t \fontsize{22}\rmestimate')
+box off
+xtickangle(0)
 nexttile
 plot(Table.week(2:T), noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)),...
     'DisplayName', 'True \itR\fontsize{12}t', 'color', 'black', 'LineStyle', '--', 'Marker', 'x')
@@ -578,9 +592,11 @@ xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
 yticks(0:2.5:12.5)
 ylim([0 12.5])
 xlabel('Time (\itt \rmweeks)')
-ylabel(""+newline+"97.5^{th} \itR\fontsize{16}t \fontsize{22}\rmpercentile")
+ylabel(""+newline+"97.5^{th} percentile \itR\fontsize{16}t \fontsize{22}\rmestimate")
+xtickangle(0)
 set(gcf,'Position',[100 100 1150 500])
-set(gcf, 'color', 'none')
+% set(gcf, 'color', 'none')
+
 box off
 
 tile.Padding  = 'compact';

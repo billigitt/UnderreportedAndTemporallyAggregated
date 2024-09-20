@@ -6,20 +6,20 @@ using Debugger, JuliaInterpreter, Trapz, ProfileView, CSV, DataFrames, Tables, D
 
 include("juliaUnderRepFunctions.jl")
 
-df = CSV.read("CSVs/evd_drc_2018-2020_daily.csv", DataFrame)
+df = CSV.read("../CSVs/evd_drc_2018-2020_daily.csv", DataFrame)
 
-new_df = combine(groupby(df, :date_onset), :n => sum)
-sorted_df = sort(new_df, :date_onset)
+new_df = combine(groupby(df, :date_onset), :n => sum) # combines all locations into one
+sorted_df = sort(new_df, :date_onset) # sort by date
 
 pop!(sorted_df) #remove NA date
-sorted_df.date_onset = Date.(sorted_df.date_onset, "yyyy-mm-dd")
+sorted_df.date_onset = Date.(sorted_df.date_onset, "yyyy-mm-dd") #chnage format of date
 
 min_date = minimum(sorted_df.date_onset)
-max_date = maximum(sorted_df.date_onset)
+max_date = maximum(sorted_df.date_onset) #find min and max dates
 
-all_dates = DataFrame(date_onset = Date(min_date):Day(1):Date(max_date))
+all_dates = DataFrame(date_onset = Date(min_date):Day(1):Date(max_date)) #data frame of dates
 
-missing_dates = innerjoin(all_dates, sorted_df, on = :date_onset)
+missing_dates = innerjoin(all_dates, sorted_df, on = :date_onset) #
 
 merged_df = outerjoin(all_dates, sorted_df, on = :date_onset)
 merged_df.n_sum = coalesce.(merged_df.n_sum, 0) 
@@ -40,7 +40,7 @@ maxIter = defaultM
 criCheck = true
 
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
-priorRShapeAndScale = [1 5]
+priorRShapeAndScale = [1 3]
 
 for i in 1:numProbsReported
     x = inferUnderRepAndTempAggR(final_df.n_sum, wAssumed, priorRShapeAndScale, probReported[i], defaultM, defaultP, maxIter, criCheck)

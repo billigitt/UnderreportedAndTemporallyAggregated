@@ -45,6 +45,7 @@ Random.seed!(seedling)
     final_df = long_df[1:nWeeks*7, :]
 
     weekly_vec = vec(sum(reshape(final_df.n_sum, 7, nWeeks), dims =1))
+    weekly_vec = [weekly_vec; 1]
 
     trueWeeklyI = zeros(Int, length(weekly_vec), nSims)
 
@@ -73,7 +74,7 @@ Random.seed!(seedling)
         criCheck = true
         
         wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
-        priorRShapeAndScale = [1 5]
+        priorRShapeAndScale = [1 3]
 
         rPosteriorColumnNames = Symbol.("rPosterior_$i" for i in 1:defaultM)
 
@@ -91,7 +92,7 @@ dfNew = @distributed append! for i in 1:nSims
     # Construct DataFrame with individual columns for each element in x["rPosterior"]
     temp_df = DataFrame(
         week = 1:length(x["means"]),
-        date = long_df.date_onset[1:7:(7*nWeeks-6)],
+        date = [long_df.date_onset[1:7:(7*(nWeeks)-6)]; Date(2020, 04, 16)],
         meanRt = vec(x["means"]),
         lowerRt = x["cri"][:, 1],
         upperRt = x["cri"][:, 2],

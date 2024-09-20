@@ -6,7 +6,7 @@ using Debugger, JuliaInterpreter, Trapz, ProfileView, CSV, DataFrames, Tables, D
 
 include("juliaUnderRepFunctions.jl")
 
-df = CSV.read("CSVs/evd_drc_2018-2020_daily.csv", DataFrame)
+df = CSV.read("../CSVs/evd_drc_2018-2020_daily.csv", DataFrame)
 
 new_df = combine(groupby(df, :date_onset), :n => sum)
 sorted_df = sort(new_df, :date_onset)
@@ -34,18 +34,20 @@ nWeeksForSI = 10
 
 defaultM = Int(1e5)
 maxIter = defaultM
+maxIterEntire = 1e8
 criCheck = true
 
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
-priorRShapeAndScale = [1 5]
+priorRShapeAndScale = [1 3]
 
 weekly_vec = vec(sum(reshape(final_df.n_sum, 7, 102), dims =1))
+weekly_vec = [weekly_vec; 1] #add one more week to make it 103 weeks with one extra case
 
-        x = inferUnderRepAndTempAggR(weekly_vec, wAssumed, priorRShapeAndScale, 0.4, defaultM, defaultP, maxIter, criCheck)
+        x = inferUnderRepAndTempAggR(weekly_vec, wAssumed, priorRShapeAndScale, 0.4, defaultM, defaultP, maxIter, maxIterEntire)
     
         df1a = DataFrame(
             week = 1:length(x["means"]),
-            date = long_df.date_onset[1:7:(7*102-6)],
+            date = [long_df.date_onset[1:7:(7*102-6)]; Date(2020, 04, 16)],
             meanRt = vec(x["means"]),
             lowerRt = x["cri"][:, 1],
             upperRt = x["cri"][:, 2],
