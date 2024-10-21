@@ -97,7 +97,7 @@ function inferUnderRepAndTempAggRStableCrI(weeklyRepI, w, priorRShapeScale, rho,
 
                 println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
             
-                iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                iter = 1 
                 k += 1
 
             end
@@ -125,7 +125,7 @@ end
 
 function inferUnderRepAndTempAggRNaive(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, criCheck)
 
-    #remove criCheck?
+
         totalWeeks = length(weeklyRepI)
         lengthSerial = length(w)
     
@@ -209,7 +209,7 @@ function inferUnderRepAndTempAggRNaive(weeklyRepI, w, priorRShapeScale, rho, M, 
     
                     println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
                 
-                    iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                    iter = 1 
                     k += 1
     
                 end
@@ -237,7 +237,7 @@ function inferUnderRepAndTempAggRNaive(weeklyRepI, w, priorRShapeScale, rho, M, 
 
 function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, maxEntireIterations)
 
-#remove criCheck?
+
     totalWeeks = length(weeklyRepI)
     lengthSerial = length(w)
 
@@ -330,7 +330,7 @@ function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, ma
 
                 println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
             
-                iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                iter = 1 
                 k += 1
 
             end
@@ -362,7 +362,7 @@ end
 
 function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter, maxEntireIterations)
 
-    #remove criCheck?
+
         totalWeeks = length(weeklyRepI)
         lengthSerial = length(w)
     
@@ -423,7 +423,7 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter, maxEn
     
                     println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
                 
-                    iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                    iter = 1 
                     k += 1
 
                     Resampling = reSampling(M, maxIter, P, storedI, weeklyRepI[1], t, priorRShapeScale, sampleI)
@@ -461,7 +461,7 @@ function inferTempAggOnlyR(weeklyRepI, w, priorRShapeScale, M, P, maxIter, maxEn
 
 function inferUnderRepAndTempAggRcriCheck(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, criCheck)
 
-    #remove criCheck?
+
         totalWeeks = length(weeklyRepI)
         lengthSerial = length(w)
     
@@ -549,7 +549,7 @@ function inferUnderRepAndTempAggRcriCheck(weeklyRepI, w, priorRShapeScale, rho, 
     
                     println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
                 
-                    iter = 1 #? basically sampling from same initial samples. Is there a better way?
+                    iter = 1 
                     k += 1
     
                 end

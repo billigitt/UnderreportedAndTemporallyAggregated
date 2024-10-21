@@ -27,6 +27,10 @@ Code for the analysis to generate figure 5 can be found in "julia/ebolaRWDAnalys
 
 Code for the analysis to generate figure S1 can be found in "julia/robustnessCheckFromLargeScaleStudy.jl".
 
+Code for implementation of the OG1 method can be found in "julia/juliaUnderRepFunctions.jl", in the function named inferTempAggOnlyR.
+
+Code for implementation of the OG2 method can be found in "julia/juliaUnderRepFunctions.jl", in the function named inferUnderRepAndTempAggR.
+
 ## Terminology
 
 $\rho$: Under-reporting
