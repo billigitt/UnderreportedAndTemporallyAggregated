@@ -33,7 +33,7 @@ Code for implementation of the OG2 method can be found in "julia/juliaUnderRepFu
 
 ## Terminology
 
-$\rho$: Under-reporting
+$\rho$: Reporting probability
 $I_t$: True incidence at time $t$
 $\hat{I}_t$: Reported incidence at time $t$
 $M$: Acceptance threshold in ABC algorithm
