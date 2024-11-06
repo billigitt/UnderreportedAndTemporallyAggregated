@@ -31,7 +31,7 @@ Code for implementation of the OG1 method can be found in "julia/juliaUnderRepFu
 
 Code for implementation of the OG2 method can be found in "julia/juliaUnderRepFunctions.jl", in the function named inferUnderRepAndTempAggR.
 
-Code for a referenced implementation of the OG2 method can be found in "julia/referenceImplementation.jl".
+Code for a referenced implementation of the OG2 method can be found in "julia/referenceImplementation.jl", in which the user can simulate their own epidemic with a true set of reproduction numbers, and use the proposed OG2 method to re-infer them.
 
 ## Terminology
 
