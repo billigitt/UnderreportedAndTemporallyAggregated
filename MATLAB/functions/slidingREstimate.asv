@@ -1,0 +1,31 @@
+function [shapeR, scaleR] = slidingREstimate(I, w, tau, priorShapeScale)
+
+    a = priorShapeScale(1);
+    b = priorShapeScale(2);
+
+    T = length(I)
+
+    shapeR = zeros(1, T);
+    shapeR(1:tau) = nan;
+    scaleR = shapeR;
+    rateR = ones(1, T)/b;
+    rateR(1:tau) = nan;
+
+    T = length(I);
+
+    for t = tau+1:T
+
+        shapeR(t) = a + sum(I(t-tau:t));
+        
+        for tt = t-tau:t
+
+            rateR(t) = rateR(t) + forceOfInfection(I, w, 1, tt+1);
+
+        end
+
+
+    end
+
+    scaleR = 1/rateR;
+
+end

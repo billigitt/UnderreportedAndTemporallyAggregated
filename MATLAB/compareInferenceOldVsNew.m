@@ -1,5 +1,5 @@
 clear all
-close all
+% close all
 
 set(0,'DefaultFigureWindowStyle','normal')
 set(0,'DefaultTextInterpreter', 'none')
@@ -67,9 +67,11 @@ xlim([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInfere
 xticks([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)])
 xticklabels(datestr([realWorldNovelInferenceEbolaSingleNaiveRho04.date(1), realWorldNovelInferenceEbolaSingleNaiveRho04.date(21), realWorldNovelInferenceEbolaSingleNaiveRho04.date(41), realWorldNovelInferenceEbolaSingleNaiveRho04.date(62), realWorldNovelInferenceEbolaSingleNaiveRho04.date(82), realWorldNovelInferenceEbolaSingleNaiveRho04.date(end)], 'mm/yy'))
 
+ylim([0 2.5])
+
 % 
 tile.Padding  = 'compact';
 tile.TileSpacing = 'compact';
 
 set(gcf,'Position',[100 100 1150 500])
-set(gcf, 'color', 'none')
+% set(gcf, 'color', 'none')

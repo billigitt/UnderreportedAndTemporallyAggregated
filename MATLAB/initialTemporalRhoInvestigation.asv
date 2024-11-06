@@ -1,0 +1,31 @@
+clear all
+
+x = readtable('../CSVs/largeScaleStudyClusterNoLimitTemporalRhoOG2_All.csv');
+trueR = x.trueR;
+meanRtOG2 = x.meanRt;
+size(meanRtOG2)
+
+%remove nan values
+meanRtOG2(1:11:end-10) = [];
+trueR(1:11:end-10) = [];
+
+%reshape into different epidemics, all of which have 10 inferences each
+trueR = reshape(trueR, 10, []);
+meanRtOG2 = reshape(meanRtOG2, 10, []);
+
+relativeErrorWeekly = abs(trueR-meanRtOG2)./trueR;
+absoluteErrorWeekly = abs(trueR-meanRtOG2);
+relativeErrorTotal = sum(relativeErrorWeekly);
+[minTotalError, mostAccurateEpidemic] = min(relativeErrorTotal);
+
+figure
+subplot(1, 2, 1)
+bar(x.reportedIncidence((mostAccurateEpidemic-1)*11+1:mostAccurateEpidemic*11))
+
+subplot(1, 2, 2)
+plot(x.trueR((mostAccurateEpidemic-1)*11+1:mostAccurateEpidemic*11), 'k')
+hold on
+plot(x.meanRt((mostAccurateEpidemic-1)*11+1:mostAccurateEpidemic*11), 'r')
+
+figure
+histogram(relativeErrorTotal/10) %divide by 10 to make it on average for each estmi

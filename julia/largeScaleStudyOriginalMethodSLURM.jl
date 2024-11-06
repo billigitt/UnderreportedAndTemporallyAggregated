@@ -14,7 +14,7 @@ using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distribu
 
 idx = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
 
-incidenceAndTrueR = CSV.read("../CSVs/largeScaleStudyIncidencesAndTrueRsMaxInc1e4.csv", DataFrame)
+incidenceAndTrueR = CSV.read("../CSVs/largeScaleStudyIncidencesAndTrueRsNoLimitPrior1And3FirstDay1.csv", DataFrame)
 Random.seed!(idx*99)
 
 # Simulate Ebola epidemic. First phase (R=10) is highly transmissible, then quite (R=1.5), then low (R=0.75).
@@ -35,7 +35,9 @@ dfNew = DataFrame(
     lowerRt = fill(NaN, T*nEpidemics*probsConsidered),
     upperRt = fill(NaN, T*nEpidemics*probsConsidered),
     totalIterations = fill(NaN, T*nEpidemics*probsConsidered),
-    runTime = fill(NaN, T*nEpidemics*probsConsidered)
+    runTime = fill(NaN, T*nEpidemics*probsConsidered),
+    reportedIncidence = fill(NaN, T*nEpidemics*probsConsidered),
+    trueR = fill(NaN, T*nEpidemics*probsConsidered)
 )
 
 count = 0
@@ -52,10 +54,11 @@ wTrue = siCalcNew(wContGamPar, trueP, nWeeksForSI, divisionsPerP)
 wAssumed = siCalcNew(wContGamPar, defaultP, nWeeksForSI, divisionsPerP)
 PoissonOrRound = "P" # P/R
 
-priorRShapeAndScale = [1 5]
+priorRShapeAndScale = [1 3]
 
 defaultM = Int(1e3)
 maxIter = defaultM*100
+maxEntireIterations = Inf
 criCheck = true
 
 for i in 1:probsConsidered*nEpidemics
@@ -65,16 +68,18 @@ for i in 1:probsConsidered*nEpidemics
         probConsidered = probsConsidered
     end
 
-    x = inferTempAggOnlyR(incidenceAndTrueR.reportedWeeklyI[((i-1)*T+1):(i*T)], wAssumed, priorRShapeAndScale, defaultM, defaultP, maxIter)
+    x = inferTempAggOnlyR(incidenceAndTrueR.reportedWeeklyI[((i-1)*T+1):(i*T)], wAssumed, priorRShapeAndScale, defaultM, defaultP, maxIter, maxEntireIterations)
 
     dfNew[(i-1)*T+1:i*T, :meanRt] = vec(x["means"])
     dfNew[(i-1)*T+1:i*T, :lowerRt] = x["cri"][:, 1]
     dfNew[(i-1)*T+1:i*T, :upperRt] = x["cri"][:, 2]
     dfNew[(i-1)*T+1:i*T, :totalIterations] = x["totalIterations"]
     dfNew[(i-1)*T+1:i*T, :runTime] = x["runTime"]
+    dfNew[(i-1)*T+1:i*T, :reportedIncidence] = incidenceAndTrueR.reportedWeeklyI[((i-1)*T+1):(i*T)]
+    dfNew[(i-1)*T+1:i*T, :trueR] = incidenceAndTrueR.trueR[((i-1)*T+1):(i*T)]
 
 end
 
-fileName = "largeScaleStudyOriginalMethodClusterMaxInc1e4s_$idx.csv"
+fileName = "largeScaleStudyOriginalMethodClusterM1e3Revisions_$idx.csv"
 
 CSV.write(fileName, dfNew)

@@ -235,6 +235,127 @@ function inferUnderRepAndTempAggRNaive(weeklyRepI, w, priorRShapeScale, rho, M, 
     
     end
 
+    function inferUnderRepAndTempAggRTemporalRho(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter)
+        totalWeeks = length(weeklyRepI)
+        lengthSerial = length(w)
+    
+        #pre-allocation
+        storedI = zeros(Int, P*totalWeeks, M)
+        storedITimet = storedI
+        sampleI = zeros(Int, P*totalWeeks, maxIter)
+        likelihood = ones(totalWeeks, M)
+        rPosterior = ones(totalWeeks, M)
+    
+        runTime = zeros(totalWeeks)
+        totalIterations = zeros(totalWeeks)
+        criTemp = fill(NaN, totalWeeks, M, 2)
+        meanTemp = fill(NaN, totalWeeks, M)
+    
+        for t in 2:totalWeeks
+    
+            # re-set acceptance and iteration counts
+            st_time = time_ns()
+            acc = 0
+            iter = 1
+            k = 1
+    
+            # as Nic suggests, faster to do this sampling in one go
+            if (t >= 3)
+    
+                sampleIdx = sample(1:M, Weights(likelihood[t-1, :]), maxIter, replace = true)
+                sampleI = storedI[:, sampleIdx]
+    
+            elseif (t == 2)
+    
+                weeklyI1 = Int(weeklyRepI[1])
+                maxVal = Int(round(100 * weeklyI1 / rho[t-1]))
+                if weeklyI1 == 0
+                    maxVal = Int(round(100/rho[t-1]))
+                end
+                invBinPMF = likeliCalcInvBin(weeklyI1, rho[t-1], maxVal)
+    
+                trueWeeklyI1 = sample(0:maxVal, Weights(invBinPMF), maxIter, replace = true)
+                sampleI[1:P, :] = generateMultinomialSamples(trueWeeklyI1, P)
+    
+            end
+    
+            #sampling R in one go is a good idea regardless of t
+            sampleR = rand(Gamma(priorRShapeScale[1], priorRShapeScale[2]), maxIter)
+    
+    
+            while (acc < M)
+    
+                # take samples of incidence and reproduction number
+                simI = sampleI[:, iter]
+                simR = sampleR[iter]
+                for j in 1:P
+    
+                    timeConsidered = min((t - 1) * P + j - 1, lengthSerial)
+    
+                    infectiousPressure = sum(simI[((t - 1) * P + j - 1):-1:((t - 1) * P + j - timeConsidered)] .* w[1:timeConsidered])
+    
+                    simI[(t-1)*P+j] = rand(Poisson(infectiousPressure*simR))
+    
+                end
+    
+                weeklySimI = sum(simI[((t-1)*P+1):(t*P)])
+    
+                likelihoodTmp = pdf.(Binomial.(weeklySimI, rho[t]), weeklyRepI[t])
+    
+                if (likelihoodTmp > 0)
+    
+                    acc += 1
+                    likelihood[t, acc] = likelihoodTmp
+                    rPosterior[t, acc] = simR
+                    storedITimet[:, acc] = simI
+    
+                    # if (criCheck == true) & (acc>1) & (sum(likelihood[t, 1:acc])> 1)
+    
+                    #     #criTemp is the credible interval calculated for each iteration
+                    #     criTemp[t, acc, 1] = quantile(rPosterior[t, 1:acc], Weights(likelihood[t, 1:acc]), 0.025)
+                    #     criTemp[t, acc, 2] = quantile(rPosterior[t, 1:acc], Weights(likelihood[t, 1:acc]), 0.975)
+                    #     meanTemp[t, acc] = sum(rPosterior[t, 1:acc] .* likelihood[t, 1:acc]) ./ sum(likelihood[t, 1:acc])
+    
+                    # end
+    
+                end
+                
+                iter += 1
+    
+                if ((iter == maxIter) & (acc < M))
+    
+                    println("Warning: maximum number of iterations reached at week ", t, " with ", acc, " samples")
+                
+                    iter = 1 
+                    k += 1
+    
+                end
+            end
+            storedI = storedITimet
+            stop_time = time_ns()
+            runTime[t] = (stop_time - st_time) / 1e9
+            totalIterations[t] = iter + (k - 1) * maxIter
+    
+            (acc < M) && break
+    
+        end
+    
+        #calculate summary statistics
+        means = sum(rPosterior .* likelihood, dims=2) ./ sum(likelihood, dims=2)
+        means[1] = NaN
+    
+        means[means.==0] .= NaN
+    
+        cri = fill(NaN, totalWeeks, 2)
+        for i in 2:totalWeeks
+            cri[i, 1] = quantile(rPosterior[i, :], Weights(likelihood[i, :]), 0.025)
+            cri[i, 2] = quantile(rPosterior[i, :], Weights(likelihood[i, :]), 0.975)
+        end
+    
+        dictionary = Dict([("means", means), ("cri", cri), ("storedI", storedI), ("likelihood", likelihood), ("rPosterior", rPosterior), ("runTime", runTime), ("totalIterations", totalIterations), ("meanTemp", meanTemp), ("criTemp", criTemp)])
+    
+    end
+
 function inferUnderRepAndTempAggR(weeklyRepI, w, priorRShapeScale, rho, M, P, maxIter, maxEntireIterations)
 
 
@@ -671,6 +792,43 @@ function siCalcCori(meanAndStd, P, numWeeksToIntegrate, divisionsPerP)
     wP = wP ./ sum(wP)
     
  wP
+end
+
+function generateIncidenceTemporalRho(day1I, trueWeeklyR, wDaily, PoissonOrRound, temporalRho, trueP)
+    wDailyLength = length(wDaily)
+    totalWeeks = length(trueWeeklyR)
+    totalDays = totalWeeks * trueP
+    dailyI = [day1I; zeros(totalDays-1)]
+
+
+        for j in 2:trueP
+            daysConsidered = min(wDailyLength, j-1)
+            if PoissonOrRound == "P"
+                dailyI[j] = rand(Poisson(trueWeeklyR[1] * sum(wDaily[daysConsidered:-1:1].*dailyI[(j-daysConsidered):(j-1)])))
+            elseif PoissonOrRound == "R"
+                dailyI[j] = round(trueWeeklyR[1] * dot(wDaily[daysConsidered:-1:1], dailyI[(j-daysConsidered):(j-1)]))
+            end
+        end
+
+
+    for i in 2:totalWeeks
+        for j in 1:trueP
+            currentDay = (i-1) * trueP + j
+            daysConsidered = min(wDailyLength, currentDay-1)
+            if PoissonOrRound == "P"
+                dailyI[(i-1)*trueP+j] = rand(Poisson(trueWeeklyR[i] * sum(wDaily[daysConsidered:-1:1].*dailyI[(currentDay - daysConsidered):(currentDay-1)])))
+            elseif PoissonOrRound == "R"
+                dailyI[(i-1)*trueP+j] = round(trueWeeklyR[i] * dot(wDaily[daysConsidered:-1:1], dailyI[(currentDay - daysConsidered):(currentDay-1)]))
+            end
+        end
+    end
+
+    weeklyI = reshape(dailyI, trueP, totalWeeks)
+    weeklyI = sum(weeklyI, dims=1)[:]
+
+    reportedWeeklyI = [rand(Binomial(Int(weeklyI[Int(n)]), temporalRho[Int(n)])) for n in (1:totalWeeks)]
+
+     Dict("weeklyI" => weeklyI, "dailyI" => dailyI, "reportedWeeklyI" => reportedWeeklyI)
 end
 
 function generateIncidence(day1I, trueWeeklyR, wDaily, PoissonOrRound, probReported, trueP)
