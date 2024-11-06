@@ -9,7 +9,7 @@ This README.md file contains the current work and outline for our project on inf
 
 This repository contains code for reproducing the results presented in the proposed manuscript, "Efficient simulation-based inference of the time-dependent reproduction number from temporally aggregated and under-reported disease incidence time series data".
 
-All code written in Julia, or MATLAB, compatible with version R2021b.
+All code written in Julia 1.11.1, or MATLAB, compatible with version R2021b.
 
 Code used to generate the panels comprising figure 1 can be found in "MATLAB/schematics.m".
 
@@ -30,6 +30,8 @@ Code for the analysis to generate figure S1 can be found in "julia/robustnessChe
 Code for implementation of the OG1 method can be found in "julia/juliaUnderRepFunctions.jl", in the function named inferTempAggOnlyR.
 
 Code for implementation of the OG2 method can be found in "julia/juliaUnderRepFunctions.jl", in the function named inferUnderRepAndTempAggR.
+
+Code for a referenced implementation of the OG2 method can be found in "julia/referenceImplementation.jl".
 
 ## Terminology
 
