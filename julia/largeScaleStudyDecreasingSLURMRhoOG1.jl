@@ -1,10 +1,15 @@
 import Pkg
 using Pkg
 
+# Set path to directory this file resides in
+cd(dirname(@__FILE__))
+
+# Load the environment and install any required packages
+Pkg.activate("../")
 Pkg.instantiate()
 
+# Specify packages needed for this script
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
-
 
 idx = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
 
@@ -60,4 +65,4 @@ criCheck = true
     dfNew[1:T, :runTime] = x["runTime"]
     dfNew[1:T, :reportedIncidence] = incidenceAndTrueR.reportedWeeklyI
 
-CSV.write("largeScaleStudyClusterNoLimitDecreasingRhoOG1_$idx.csv", dfNew)
+CSV.write("../CSVs/largeScaleStudyClusterNoLimitDecreasingRhoOG1_$idx.csv", dfNew)

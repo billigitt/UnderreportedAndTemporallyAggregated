@@ -1,10 +1,13 @@
-# This file is used to generate synthetuc Ebola-like outbreaks with a 'stuttering-start'. The files produced are .csv files with 'Ebola' and 'Stutter' in them. The seed also demonstrates the seed chosen for the random number generation.
+# This file is used to generate synthetic Ebola-like outbreaks with a 'stuttering-start'. The files produced are .csv files with 'Ebola' and 'Stutter' in them. The seed also demonstrates the seed chosen for the random number generation.
 
-import Pkg
-using Pkg
+# Set path to directory this file resides in
+cd(dirname(@__FILE__))
 
+# Load the environment and install any required packages
+Pkg.activate("../")
 Pkg.instantiate()
 
+# Specify packages needed for this script
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 # Simulate Ebola epidemic. First phase (R=10) is highly transmissible, then quite (R=1.5), then low (R=0.75).
@@ -14,7 +17,7 @@ include("juliaUnderRepFunctions.jl")
 
 Random.seed!(1)
 
-inferenceBatch1 = CSV.read("CSVs/noLimitNewMethodPrior1And3.csv", DataFrame)
+inferenceBatch1 = CSV.read("../CSVs/noLimitNewMethodPrior1And3.csv", DataFrame)
 ii = 40
 reportedWeeklyI = inferenceBatch1.reportedWeeklyI[(1+11*(9*13+4)):(11+11*(9*13+4))]
 weeklyI = inferenceBatch1.weeklyI[(1+11*(9*13+4)):(11+11*(9*13+4))]
@@ -72,7 +75,7 @@ for i in 1:numInf
 end
 
 
-CSV.write("robustnessCheckFromLargeScaleStudyM1e3.csv", df1a)
+CSV.write("../CSVs/robustnessCheckFromLargeScaleStudyM1e3.csv", df1a)
 
 defaultM = 10000
 maxIter = defaultM*10
@@ -105,7 +108,7 @@ for i in 1:numInf
 end
 
 
-CSV.write("robustnessCheckFromLargeScaleStudyM1e4.csv", df1b)
+CSV.write("../CSVs/robustnessCheckFromLargeScaleStudyM1e4.csv", df1b)
 
 defaultM = Int(1e5)
 maxIter = defaultM
@@ -138,4 +141,4 @@ for i in 1:numInf
 end
 
 
-CSV.write("robustnessCheckFromLargeScaleStudyM1e5.csv", df1c)
+CSV.write("../CSVs/robustnessCheckFromLargeScaleStudyM1e5.csv", df1c)
