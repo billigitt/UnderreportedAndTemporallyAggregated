@@ -4,6 +4,10 @@
 #NB: The following two lines must be uncommented when initially implementing this file. They can then be re-commented, to speed up the process of running the file.
 # import Pkg
 # Pkg.add(["QuadGK", "Distributions", "StatsBase", "Random", "DataFrames", "CSV", "Dates", "Distributed", "SharedArrays", "ProgressMeter", "Trapz", "Debugger", "JuliaInterpreter", "Tables", "Plots"])
+import Pkg
+using Pkg
+
+Pkg.instantiate()
 
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 

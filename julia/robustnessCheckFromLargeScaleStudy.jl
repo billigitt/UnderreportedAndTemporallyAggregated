@@ -1,6 +1,11 @@
 # This file is used to generate synthetuc Ebola-like outbreaks with a 'stuttering-start'. The files produced are .csv files with 'Ebola' and 'Stutter' in them. The seed also demonstrates the seed chosen for the random number generation.
 
-using Debugger, JuliaInterpreter, Trapz, ProfileView, CSV, DataFrames, Tables
+import Pkg
+using Pkg
+
+Pkg.instantiate()
+
+using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 # Simulate Ebola epidemic. First phase (R=10) is highly transmissible, then quite (R=1.5), then low (R=0.75).
 # This is to give a realistic epidemic curve. We assume that the epidemic is reported with a probability of rho.

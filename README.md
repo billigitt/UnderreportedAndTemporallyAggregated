@@ -19,11 +19,15 @@ Code for reproducing figure 4 can be found in "MATLAB/compareInferenceOldVsNew.m
 
 Code for reproducing figure 5 can be found in "MATLAB/plotRWDEbola.m".
 
+Code for reproducing figures 6 and S3 can be found in "MATLAB/compareInferenceTemporalRho.m".
+
 Code for the analysis to generate figures 2, 3 and S2 can be found in "julia/largeScaleStudyOriginalMethodSLURM.jl".
 
 Code for the analysis to generate figure 4 can be found in "julia/ebolaRWDAnalysisEdittedSingleNaive.jl".
 
 Code for the analysis to generate figure 5 can be found in "julia/ebolaRWDAnalysisEditted.jl".
+
+Code for the analysis to generate figures 6 and S3 can be found in "julia/largeScaleStudyIncreasingSLURMRhoOG1.jl", "julia/largeScaleStudyDecreasingSLURMRhoOG1.jl", "julia/largeScaleStudyDecreasingRhoSLURM.jl" and "julia/largeScaleStudyIncreasingRhoSLURM.jl"
 
 Code for the analysis to generate figure S1 can be found in "julia/robustnessCheckFromLargeScaleStudy.jl".
 

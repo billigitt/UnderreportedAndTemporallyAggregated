@@ -1,8 +1,10 @@
 import Pkg
-Pkg.add(["QuadGK", "Distributions", "StatsBase", "Random", "DataFrames", "CSV", "Dates", "Distributed", "SharedArrays", "ProgressMeter", "Trapz", "Debugger", "JuliaInterpreter"])
+using Pkg
 
-using StatsBase
-using Distributions, StatsBase, Random, DataFrames, CSV, Dates,  Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter
+Pkg.instantiate()
+
+using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
+
 
 workers = 24
 seedling = 1

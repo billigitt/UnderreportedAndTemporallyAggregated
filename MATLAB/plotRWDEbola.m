@@ -121,12 +121,31 @@ xlim([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(end)
 xticks([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)])
 xticklabels(datestr([realWorldInferenceEbolaRho1.date(1), realWorldInferenceEbolaRho1.date(21), realWorldInferenceEbolaRho1.date(41), realWorldInferenceEbolaRho1.date(62), realWorldInferenceEbolaRho1.date(82), realWorldInferenceEbolaRho1.date(end)], 'mm/yy'))
 nexttile
-p(1) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 1), [meanAndCredibleAllRhoMatrix(2:end, 2, 1), meanAndCredibleAllRhoMatrix(2:end, 3, 1)], realWorldInferenceEbolaRho1.date(2:end), [0.9290 0.6940 0.1250], 'a', 'b');
+
+time = realWorldNovelInferenceEbolaSingleRho04.date(2:end);
+timeFlip = [time; flipud(time)];
+
+credibleRho1 = [meanAndCredibleAllRhoMatrix(2:end, 2, 1); flipud(meanAndCredibleAllRhoMatrix(2:end, 3, 1))];
+credibleRho9 = [meanAndCredibleAllRhoMatrix(2:end, 2, 9); flipud(meanAndCredibleAllRhoMatrix(2:end, 3, 9))];
+
 hold on
-p(3) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 9), [meanAndCredibleAllRhoMatrix(2:end, 2, 9), meanAndCredibleAllRhoMatrix(2:end, 3, 9)], realWorldInferenceEbolaRho1.date(2:end), [0.4940 0.1840 0.5560], 'a3', 'b3');
+g1 = fill(timeFlip, credibleRho1, [0.9290 0.6940 0.1250]);
+g2 = fill(timeFlip, credibleRho9, [0.4940 0.1840 0.5560]);
+set(g1, 'facealpha', 0.5)
+set(g1,'LineStyle', 'none')
+set(g1, 'EdgeColor', [0.9290 0.6940 0.1250])
+set(g2, 'facealpha', 0.5)
+set(g2,'LineStyle', 'none')
+set(g2, 'EdgeColor', [0.4940 0.1840 0.5560])
+p(1) = plot(time, meanAndCredibleAllRhoMatrix(2:end, 1, 1), 'color', [0.9290 0.6940 0.1250]);
+p(3) = plot(time, meanAndCredibleAllRhoMatrix(2:end, 1, 9), 'color', [0.4940 0.1840 0.5560]);
+% 
+% p(1) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 1), [meanAndCredibleAllRhoMatrix(2:end, 2, 1), meanAndCredibleAllRhoMatrix(2:end, 3, 1)], realWorldInferenceEbolaRho1.date(2:end), [0.9290 0.6940 0.1250], 'a', 'b');
+% hold on
+% p(3) = plotMeanAndCredible(meanAndCredibleAllRhoMatrix(2:end, 1, 9), [meanAndCredibleAllRhoMatrix(2:end, 2, 9), meanAndCredibleAllRhoMatrix(2:end, 3, 9)], realWorldInferenceEbolaRho1.date(2:end), [0.4940 0.1840 0.5560], 'a3', 'b3');
 xlabel('Date (mm/yy)')
 ylabel({'Time-dependent';'reproduction number (\itR\fontsize{14}t\fontsize{18}\rm)'})
-legend(p([1 3]), '\rho = 0.1', '\rho = 0.9')
+legend(p([1 3]), '\rho = 0.1', '\rho = 0.9', 'Location', 'North')
 %xlim([0 102.5])
 %datetick('x', 'mm/yy');
 xtickangle(60);

@@ -40,24 +40,23 @@ colourMat = [0.9 0.6 0;... %orange 1
 
 criWidthThreshold = (icdf('Gamma', 0.975, 1, 3) - icdf('Gamma', 0.025, 1, 3))/3;
 
-
+OG1Green = [0.4660 0.6740 0.1880];
 
 idx1s = 1:11:(11*9*999+11*8+1);
 idxAll = 1:(11*9*1000);
 idxNot1s = idxAll;
 idxNot1s(idx1s) = [];
 
+% OG1lowerRMaster(:) = 1;
+% OG1upperRMaster(:) = 2;
+% OG1meanRMaster(:) = 1.5;
+
 OG1lowerRMaster(idx1s) = [];
 OG1upperRMaster(idx1s) = [];
 OG1meanRMaster(idx1s) = [];
 
 OG1Widths = OG1upperRMaster - OG1lowerRMaster;
-idxOG1Include = (OG1Widths < criWidthThreshold);
-
-
-% OG1lowerRMaster = OG1lowerRMaster(idxOG1Include);
-% OG1upperRMaster = OG1upperRMaster(idxOG1Include);
-% OG1meanRMaster = OG1meanRMaster(idxOG1Include);
+idxIncludeOG1 = (OG1Widths < criWidthThreshold);
 
 
 totalItOG = noLimitOriginalMethodVariableMPrior1And3.totalIterations;
@@ -100,13 +99,6 @@ entireItM1e4OG(entireItM1e4OG > 1e7) = 1e7+1;
 entireItNew = sum(reshape(totalItNew, 10, 9000));
 entireItOG = sum(reshape(totalItOG, 10, 9000));
 
-% figure
-% histogram(entireItOG./entireItNew)
-% xlabel('#Original simulations/#New simulations')
-% ylabel('Frequency')
-% xlim([0 5])
-% ylim([0 1700])
-
 trueR = noLimitOriginalMethodVariableMPrior1And3.trueR;
 trueR(idx1s) = [];
 
@@ -146,9 +138,7 @@ errorOG1 = (OG1meanRMaster - trueR)./trueR;
 errorOG = (estROG - trueR)./trueR;
 errorNew = (estRNew - trueR)./trueR;
 errorEE = (estREE - trueR)./trueR;
-errorOG(idxExcludeOG) = [];
-errorNew(idxExcludeNew) = [];
-% errorEE(idxExcludeEE) = [];
+
 
 absErrorOG = abs(errorOG);
 absErrorNew = abs(errorNew);
@@ -157,6 +147,7 @@ absErrorEE = abs(errorEE);
 coverageOG = (lowerROG <= trueR) & (upperROG >= trueR);
 coverageNew = (lowerRNew <= trueR) & (upperRNew >= trueR);
 coverageEE = (lowerREE <= trueR) & (upperREE >= trueR);
+coverageOG1 = (OG1lowerRMaster <= trueR) & (OG1upperRMaster >= trueR);
 
 coverageNewEpi = coverageNew;
 coverageNewEpi(~idxIncludeNew) = -1;
@@ -164,18 +155,23 @@ coverageEEEpi = coverageEE;
 coverageEEEpi(~idxIncludeEE) = -1;
 coverageOGEpi = coverageOG;
 coverageOGEpi(~idxIncludeOG) = -1;
+coverageOG1Epi = coverageOG1;
+coverageOG1Epi(~idxIncludeOG1) = -1;
 
-numIgnoredNew = 10-sum(reshape(coverageNewEpi, 10, 9000) == -1);
-numIgnoredEE = 10-sum(reshape(coverageEEEpi, 10, 9000) == -1);
-numIgnoredOG = 10-sum(reshape(coverageOGEpi, 10, 9000) == -1);
+numIncludedNew = 10-sum(reshape(coverageNewEpi==-1, 10, 9000));
+numIncludedEE = 10-sum(reshape(coverageEEEpi==-1, 10, 9000));
+numIncludedOG = 10-sum(reshape(coverageOGEpi==-1, 10, 9000));
+numIncludedOG1 = 10-sum(reshape(coverageOG1Epi==-1, 10, 9000));
 
 coverageNewEpi(coverageNewEpi==-1) = 0;
 coverageEEEpi(coverageEEEpi==-1) = 0;
 coverageOGEpi(coverageOGEpi==-1) = 0;
+coverageOG1Epi(coverageOGEpi==-1) = 0;
 
-coverageNewByEpi = sum(reshape(coverageNewEpi, 10, 9000))./numIgnoredNew;
-coverageEEByEpi = sum(reshape(coverageEEEpi, 10, 9000))./numIgnoredEE;
-coverageOGByEpi = sum(reshape(coverageOGEpi, 10, 9000))./numIgnoredOG;
+coverageNewByEpi = sum(reshape(coverageNewEpi, 10, 9000))./numIncludedNew;
+coverageEEByEpi = sum(reshape(coverageEEEpi, 10, 9000))./numIncludedEE;
+coverageOGByEpi = sum(reshape(coverageOGEpi, 10, 9000))./numIncludedOG;
+coverageOG1ByEpi = sum(reshape(coverageOG1Epi, 10, 9000))./numIncludedOG;
 
 coverageByRhoOG = zeros(1,9);
 coverageByRhoNew = zeros(1,9);
@@ -225,15 +221,6 @@ idxCorrectNewIncorrectOGBehind(1) = [];
 idxCorrectNewIncorrectOGBehind = [idxCorrectNewIncorrectOGBehind; false];
 
 
-
-% h(1) = histogram(trueR(idxCorrectNewIncorrectOG));
-% hold on
-% h(2) = histogram(trueR(idxCorrectNewIncorrectOGBehind));
-% legend(h([1 2]), 't', 't-1')
-% xlabel('Rt')
-% ylabel('Frequency')
-
-
 %% Plotting
 
 
@@ -256,23 +243,7 @@ ylabel('95% CrI width')
 xlabel('Reporting probability, \rho')
 xticks(0:0.2:1)
  
-% nexttile
-% yline(95, 'k--', 'LineWidth', 1.5)
-% hold on
-% ee = plot(0.1:0.1:0.9, 100*coverageByRhoEE, 'color', colourMat(2,:));
-% og = plot(0.1:0.1:0.9, 100*coverageByRhoOG, 'color', colourMat(1,:));
-% ur = plot(0.1:0.1:0.9, 100*coverageByRhoNew, 'color', colourMat(7, :));
-% 
-% ylim([30 100])
-% xlim([0 1])
-% xticks(0:0.2:1)
-% xlabel('Reporting rate, \rho')
-% ylabel('CrI coverage (%)')
-% legend([ee og ur], "\fontsize{16}Cori (no"+newline+"\fontsize{16}under-reporting)",...
-%     "\fontsize{16}Simulation based"+newline+"\fontsize{16}(no under-reporting)",...
-%     "\fontsize{16}Simulation based"+newline+"\fontsize{16}(under-reporting)",...
-%     'Location', 'SouthWest')
-% box off
+
 set(gcf,'Position',[100 100 1150 500])
 % set(gcf, 'color', 'none') ;
 
@@ -283,7 +254,7 @@ tile.TileSpacing = 'compact';
 
 subplot(1, 2, 1);
 % nexttile
-h(1) = histogram(entireItM1e4OG, 'Normalization', 'probability', 'FaceColor', colourMat(1,:), 'BinWidth', 1e6, 'LineStyle', 'none');
+h(1) = histogram(entireItM1e4OG, 'Normalization', 'probability', 'FaceColor', OG1Green, 'BinWidth', 1e6, 'LineStyle', 'none');
 hold on
 h(2) = histogram(entireItM1e4New, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinWidth', 1e6, 'LineStyle', 'none');
 xlabel('Number of simulated weeks')
@@ -297,12 +268,12 @@ legend(h([1 2]), "\fontsize{17}OG1 method", "\fontsize{17}OG2 method", 'Location
 xtickangle(0)
 box off
 subplot(1, 2, 2)
-h(1) = histogram(100*coverageOGByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(1,:), 'BinEdges', -0:100/11:100, 'LineStyle', 'none');
+h(1) = histogram(100*coverageOGByEpi, 'Normalization', 'probability', 'FaceColor', OG1Green, 'BinEdges', -0:100/11:100, 'LineStyle', 'none');
 hold on
 h(2) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7,:), 'BinEdges', -0:100/11:100, 'LineStyle', 'none');
 
 xline(100*mean(coverageNewByEpi), '--','color', colourMat(7, :), 'LineWidth', 2)
-xline(100*mean(coverageOGByEpi), '--', 'color', colourMat(1, :), 'LineWidth', 2)
+xline(100*mean(coverageOGByEpi), '--', 'color', OG1Green, 'LineWidth', 2)
 xlabel('CrI coverage (%)')
 ylabel("\color{white}."+newline+"\color[rgb]{0.15, 0.15, 0.15}Percentage of"+newline+"model fits (%)")
 yticks(0:0.2:1)
@@ -314,6 +285,7 @@ xlim([0 100])
 legend(h([1 2]), "\fontsize{17}OG1 method", "\fontsize{17}OG2 method", 'Location', 'NorthWest')
 
 box off
+set(gcf, 'color', 'none') ;
 % tile.Padding  = 'compact';
 % tile.TileSpacing = 'compact';
 set(gcf,'Position',[100 100 1150 500])
@@ -342,173 +314,8 @@ set(gcf,'Position',[100 100 750 500])
 % set(gcf, 'color', 'none') ;
 
 
-% figure
-% 
-% histogram(absErrorNew(idxIncludeNew), 'BinWidth', 0.02);
-% hold on
-% histogram(absErrorOG(idxIncludeOG), 'BinWidth', 0.02);
-% xlim([0 2])
 
-%% Example Inference
-
-
-figure
-tile = tiledlayout(2, 2);
-nexttile
-bar(1:11, noLimitNewMethodPrior1And3.reportedWeeklyI(1+11*(9*13+4):11+11*(9*13+4)), 'BarWidth', 1, 'LineStyle','none')
-ylabel('\fontsize{22}Reported incidence')
-xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
-xlim([0.5 11.5])
-xticks(1:11)
-xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
-ylim([0 1600])
-yticks(0:400:1600)
-xtickangle(0)
-box off
-nexttile
-x = plotMeanAndCredible(noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9*13+4)), ...
-    [noLimitNewMethodPrior1And3.lowerRt(2+11*(9*13+4):11+11*(9*13+4)),...
-    noLimitNewMethodPrior1And3.upperRt(2+11*(9*13+4):11+11*(9*13+4))], (2:11)', colourMat(7, :), 'Epi-Estim Perfect Information Mean', 'Epi-Estim Perfect Information 95% Cri');
-hold on
-y = plotMeanAndCredible(means(1+10*(9*13+4):10+10*(9*13+4)), cis(1+10*(9*13+4):10+10*(9*13+4), :), (2:11)', colourMat(2, :), 'mean', 'ci');
-% xx = plotMeanAndCredible(OG1meanRMaster(1+10*(9*13+4):10+10*(9*13+4)), [OG1lowerRMaster(1+10*(9*13+4):10+10*(9*13+4)), OG1upperRMaster(1+10*(9*13+4):10+10*(9*13+4))], (2:11)', [0.5 0.5 0.5], 'mean', 'ci');
-z = plot(2:11, noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'k--');
-legend([z, y, x], '\fontsize{16}True \itR\fontsize{12}t', "\fontsize{16}Cori method", "\fontsize{16}OG2 method")
-ylabel({'\fontsize{22}';'\fontsize{22}Time-dependent';'\fontsize{22}reproduction number (\itR\fontsize{16}t\fontsize{22}\rm)'})
-xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
-xlim([0.5 11.5])
-ylim([0 16])
-yticks(0:4:16)
-yticklabels({'0', '4', '8', '12', '16'})
-xticks(1:11)
-xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
-xtickangle(0)
-nexttile
-h(1) = histogram(100*errorNew(idxIncludeNew), 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'LineStyle','none');
-hold on
-h(2) = histogram(100*errorEE(idxIncludeEE), 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'LineStyle','none');
-% h(3) = histogram(100*errorOG1(idxOG1Include), 'Normalization', 'probability', 'FaceColor', [0.5 0.5 0.5], 'LineStyle','none');
-% h(4) = histogram(100*errorOG(idxIncludeOG), 'Normalization', 'probability', 'FaceColor', [0.25 0.25 0.25], 'LineStyle','none');
-% xticks(0:25:100)
-% % xticklabels({'0', '25', '50', '75', '100'})
-yticks(0:0.05:0.25)
-yticklabels({'0', '5', '10', '15', '20', '25'})
-xlabel('\fontsize{22}Relative error (%)')
-ylabel('\fontsize{22}Percentage of inferences (%)')
-% xline(mean(errorEE(idxIncludeEE))*100, '--', 'color', colourMat(1, :), 'LineWidth', 2)
-% xline(mean(errorNew(idxIncludeNew))*100, '--', 'color', colourMat(7, :), 'LineWidth', 2)
-xlim([-100 100])
-xtickangle(0)
-legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
-box off
-
-
-nexttile
-h(1) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
-hold on
-h(2) = histogram(100*coverageEEByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
-% yticks(0:0.1:0.6)
-% yticklabels({'0', '10', '20', '30', '40', '50', '60'})
-xline(100*mean(coverageNewByEpi), '--','color', colourMat(7, :), 'LineWidth', 2)
-xline(100*mean(coverageEEByEpi), '--', 'color', colourMat(2, :), 'LineWidth', 2)
-yticks(0:0.2:1)
-yticklabels({'0', '20', '40', '60', '80', '100'})
-xlim([0 100])
-xticks(0:10:100)
-xticklabels({'0', '', '20', '', '40', '', '60', '', '80', '', '100'})
-ylabel("\fontsize{22}Percentage of"+newline+"model fits (%)")
-xlabel('\fontsize{22}CrI coverage (%)')
-xtickangle(0)
-legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
-box off
-
-
-set(gcf,'Position',[100 100 1150 1150])
-% set(gcf, 'color', 'none') ;
-
-tile.Padding  = 'compact';
-tile.TileSpacing = 'compact';
-
-% Reviewer 1 Plot
-
-
-figure
-tile = tiledlayout(2, 2);
-nexttile
-bar(1:11, noLimitNewMethodPrior1And3.reportedWeeklyI(1+11*(9*13+4):11+11*(9*13+4)), 'BarWidth', 1, 'LineStyle','none')
-ylabel('\fontsize{22}Reported incidence')
-xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
-xlim([0.5 11.5])
-xticks(1:11)
-xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
-ylim([0 1600])
-yticks(0:400:1600)
-xtickangle(0)
-box off
-nexttile
-x = plotMeanAndCredibleReviewer1(noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9*13+4)), ...
-    [noLimitNewMethodPrior1And3.lowerRt(2+11*(9*13+4):11+11*(9*13+4)),...
-    noLimitNewMethodPrior1And3.upperRt(2+11*(9*13+4):11+11*(9*13+4))], (2:11)', colourMat(7, :), 'Epi-Estim Perfect Information Mean', 'Epi-Estim Perfect Information 95% Cri');
-hold on
-y = plotMeanAndCredibleReviewer1(means(1+10*(9*13+4):10+10*(9*13+4)), cis(1+10*(9*13+4):10+10*(9*13+4), :), (2:11)', colourMat(2, :), 'mean', 'ci');
-z = plot(2:11, noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'k');
-legend([z, y, x], '\fontsize{16}True \itR\fontsize{12}t', "\fontsize{16}Cori method", "\fontsize{16}OG2 method")
-ylabel({'\fontsize{22}';'\fontsize{22}Time-dependent';'\fontsize{22}reproduction number (\itR\fontsize{16}t\fontsize{22}\rm)'})
-xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
-xlim([0.5 11.5])
-ylim([0 16])
-yticks(0:4:16)
-yticklabels({'0', '4', '8', '12', '16'})
-xticks(1:11)
-xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
-xtickangle(0)
-nexttile
-h(1) = histogram(100*errorNew(idxIncludeNew), 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'LineStyle','none');
-hold on
-h(2) = histogram(100*errorEE(idxIncludeEE), 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'LineStyle','none');
-% xticks(0:25:100)
-% % xticklabels({'0', '25', '50', '75', '100'})
-yticks(0:0.05:0.25)
-yticklabels({'0', '5', '10', '15', '20', '25'})
-xlabel('\fontsize{22}Relative error (%)')
-ylabel('\fontsize{22}Percentage of inferences (%)')
-% xline(mean(errorEE(idxIncludeEE))*100, '--', 'color', colourMat(1, :), 'LineWidth', 2)
-% xline(mean(errorNew(idxIncludeNew))*100, '--', 'color', colourMat(7, :), 'LineWidth', 2)
-xlim([-100 100])
-xtickangle(0)
-legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
-box off
-
-
-nexttile
-h(1) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
-hold on
-h(2) = histogram(100*coverageEEByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
-% yticks(0:0.1:0.6)
-% yticklabels({'0', '10', '20', '30', '40', '50', '60'})
-xline(100*mean(coverageNewByEpi), '--','color', colourMat(7, :), 'LineWidth', 2)
-xline(100*mean(coverageEEByEpi), '--', 'color', colourMat(2, :), 'LineWidth', 2)
-yticks(0:0.2:1)
-yticklabels({'0', '20', '40', '60', '80', '100'})
-xlim([0 100])
-xticks(0:10:100)
-xticklabels({'0', '', '20', '', '40', '', '60', '', '80', '', '100'})
-ylabel("\fontsize{22}Percentage of"+newline+"model fits (%)")
-xlabel('\fontsize{22}CrI coverage (%)')
-xtickangle(0)
-legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
-box off
-
-
-set(gcf,'Position',[100 100 1150 1150])
-% set(gcf, 'color', 'none') ;
-
-tile.Padding  = 'compact';
-tile.TileSpacing = 'compact';
-
-
-
-% Reviewer 2 Plot
+%% Ed's edit to Reviewer 2
 
 figure
 tile = tiledlayout(2, 2);
@@ -533,15 +340,28 @@ yneg1 = noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9*13+4)) - ...
 ypos2 = cis(1+10*(9*13+4):10+10*(9*13+4), 1) - means(1+10*(9*13+4):10+10*(9*13+4));
 yneg2 = means(1+10*(9*13+4):10+10*(9*13+4)) - cis(1+10*(9*13+4):10+10*(9*13+4), 2);
 
-x = errorbar((2:11)', noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9*13+4)), ...
-    yneg1, ypos1, 'o', 'LineWidth', 2, 'Color',colourMat(7, :));
+x = errorbar((2:11)'+0.2, noLimitNewMethodPrior1And3.meanRt(2+11*(9*13+4):11+11*(9*13+4)), ...
+    yneg1, ypos1, '.', 'LineWidth', 2, 'Color',colourMat(7, :), 'MarkerSize', 15);
+x.CapSize = 10;
 hold on
 
-y = errorbar((2:11)', means(1+10*(9*13+4):10+10*(9*13+4)), yneg2, ypos2, ...
-    'o', 'LineWidth', 2, 'Color', colourMat(2, :));
+y = errorbar((2:11)'-0.2, means(1+10*(9*13+4):10+10*(9*13+4)), yneg2, ypos2, ...
+    '.', 'LineWidth', 2, 'Color', colourMat(2, :), 'MarkerSize', 15);
+y.CapSize = 10;
 
-z = plot(2:11, noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'k');
-legend([z, y, x], '\fontsize{16}True \itR\fontsize{12}t', "\fontsize{16}Cori method", "\fontsize{16}OG2 method")
+v1 = OG1meanRMaster(1+10*(9*13+4):10+10*(9*13+4)) - OG1lowerRMaster(1+10*(9*13+4):10+10*(9*13+4));
+v2 = OG1upperRMaster(1+10*(9*13+4):10+10*(9*13+4)) - OG1meanRMaster(1+10*(9*13+4):10+10*(9*13+4));
+
+v = errorbar((2:11)', OG1meanRMaster(1+10*(9*13+4):10+10*(9*13+4)), v1, v2, ...
+    '.', 'LineWidth', 2, 'Color', OG1Green, 'MarkerSize', 15);
+v.CapSize = 10;
+
+for i=1:10
+
+z = plot([.5+i 1.5+i], repelem(noLimitNewMethodPrior1And3.trueR(1+i+11*(9*13+4)), 2), 'k:');
+
+end
+legend([y, v, x, z], "\fontsize{16}Cori method", "\fontsize{16}OG1 method", "\fontsize{16}OG2 method", '\fontsize{16}True \itR\fontsize{12}t')
 ylabel({'\fontsize{22}';'\fontsize{22}Time-dependent';'\fontsize{22}reproduction number (\itR\fontsize{16}t\fontsize{22}\rm)'})
 xlabel('\fontsize{22}Time (\itt\fontsize{16} \fontsize{22}\rmweeks)')
 xlim([0.5 11.5])
@@ -551,10 +371,13 @@ yticklabels({'0', '4', '8', '12', '16'})
 xticks(1:11)
 xticklabels({'', '2', '', '4', '', '6', '', '8', '', '10', ''})
 xtickangle(0)
+box off
+
 nexttile
 h(1) = histogram(100*errorNew(idxIncludeNew), 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'LineStyle','none');
 hold on
 h(2) = histogram(100*errorEE(idxIncludeEE), 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'LineStyle','none');
+h(3) = histogram(100*errorOG1(idxIncludeOG1), 'Normalization', 'probability', 'FaceColor', OG1Green, 'LineStyle','none');
 % xticks(0:25:100)
 % % xticklabels({'0', '25', '50', '75', '100'})
 yticks(0:0.05:0.25)
@@ -565,7 +388,7 @@ ylabel('\fontsize{22}Percentage of inferences (%)')
 % xline(mean(errorNew(idxIncludeNew))*100, '--', 'color', colourMat(7, :), 'LineWidth', 2)
 xlim([-100 100])
 xtickangle(0)
-legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
+legend(h([2 3 1]), "\fontsize{16}Cori method", "\fontsize{16}OG1 method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
 box off
 
 
@@ -573,10 +396,12 @@ nexttile
 h(1) = histogram(100*coverageNewByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(7, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
 hold on
 h(2) = histogram(100*coverageEEByEpi, 'Normalization', 'probability', 'FaceColor', colourMat(2, :), 'BinEdges', 0:100/11:100, 'LineStyle','none');
+h(3) = histogram(100*coverageOG1ByEpi, 'Normalization', 'probability', 'FaceColor', OG1Green, 'BinEdges', 0:100/11:100, 'LineStyle','none');
 % yticks(0:0.1:0.6)
 % yticklabels({'0', '10', '20', '30', '40', '50', '60'})
 xline(100*mean(coverageNewByEpi), '--','color', colourMat(7, :), 'LineWidth', 2)
 xline(100*mean(coverageEEByEpi), '--', 'color', colourMat(2, :), 'LineWidth', 2)
+xline(100*mean(coverageOG1ByEpi), '--', 'color', OG1Green, 'LineWidth', 2)
 yticks(0:0.2:1)
 yticklabels({'0', '20', '40', '60', '80', '100'})
 xlim([0 100])
@@ -585,17 +410,16 @@ xticklabels({'0', '', '20', '', '40', '', '60', '', '80', '', '100'})
 ylabel("\fontsize{22}Percentage of"+newline+"model fits (%)")
 xlabel('\fontsize{22}CrI coverage (%)')
 xtickangle(0)
-legend(h([2 1]), "\fontsize{16}Cori method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
+legend(h([2 3 1]), "\fontsize{16}Cori method", "\fontsize{16}OG1 method", "\fontsize{16}OG2 method", 'Location', 'NorthWest')
 box off
 
 
 set(gcf,'Position',[100 100 1150 1150])
-% set(gcf, 'color', 'none') ;
+set(gcf, 'color', 'none') ;
 
 tile.Padding  = 'compact';
 tile.TileSpacing = 'compact';
 
-%%
 
 T = max(robustnessCheckFromLargeScaleStudyM1e3.week);
 
@@ -607,42 +431,6 @@ Table.M = [1e3*ones(30*T, 1); 1e4*ones(30*T, 1); 1e5*ones(30*T, 1)];
 
 idxIncluded = reshape((2:11)' + (0:11:89*11), 1, []);
 
-% figure
-% subplot(1,3,1)
-% boxchart(Table.week(idxIncluded), Table.meanRt(idxIncluded), 'GroupByColor', Table.M(idxIncluded), 'MarkerStyle', "none")
-% hold on
-% plot(Table.week(2:T), noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'DisplayName', 'True \itR\fontsize{12}t', 'color', 'black', 'LineStyle', '--')
-% %scatter(Table.week(4:T), outputStruct.Means(3:10), 40, 'MarkerEdgeColor',[0 0.4470 0.7410], 'MarkerFaceColor',[0 0.4470 0.7410], 'LineWidth',1.5, 'DisplayName', 'EpiEstim PI')
-% xlabel('Time (\itt \rmweeks)')
-% ylabel('Mean \itR\fontsize{16}t')
-% xlim([0.5 11.5])
-% ylim([0 11])
-% 
-% subplot(1, 3,2)
-% boxchart(Table.week(idxIncluded), Table.lowerRt(idxIncluded), 'GroupByColor', Table.M(idxIncluded), 'MarkerStyle', "none")
-% hold on
-% plot(Table.week(2:T), noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'DisplayName', 'True $R_t$', 'color', 'black', 'LineStyle', '--')
-% %scatter(Table.week(2:T), outputStruct.CIs(2, :), 40, 'MarkerEdgeColor',[0 0.4470 0.7410], 'MarkerFaceColor',[0 0.4470 0.7410], 'LineWidth',1.5, 'DisplayName', 'EpiEstim PI')
-% xlabel('Time (\itt \rmweeks)')
-% ylabel('2.5^{th} \itR\fontsize{16}t \fontsize{22}\rmpercentile')
-% xlim([0.5 11.75])
-% ylim([0 11])
-% legend('\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}1,000', '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}10,000', '\fontsize{18}\itM\rm\fontsize{9} \fontsize{18}=\fontsize{1} \fontsize{18}100,000', 'True \itR\fontsize{14}t', 'EpiEstim')
-% 
-% 
-% subplot(1, 3,3)
-% boxchart(Table.week(idxIncluded), Table.upperRt(idxIncluded), 'GroupByColor', Table.M(idxIncluded), 'MarkerStyle', "none")
-% hold on
-% plot(Table.week(2:T), noLimitNewMethodPrior1And3.trueR(2+11*(9*13+4):11+11*(9*13+4)), 'DisplayName', 'True $R_t$', 'color', 'black', 'LineStyle', '--')
-% %scatter(Table.week(2:T), outputStruct.CIs(1, :), 40, 'MarkerEdgeColor',[0 0.4470 0.7410], 'MarkerFaceColor',[0 0.4470 0.7410], 'LineWidth',1.5, 'DisplayName', 'EpiEstim PI')
-% xlabel('Time (\itt \rmweeks)')
-% ylabel('97.5^{th} \itR\fontsize{16}t \fontsize{22}\rmpercentile')
-% xlim([0.5 11.5])
-% ylim([0 11])
-% 
-% box off
-% set(gcf,'Position',[100 100 1150 500])
-% set(gcf, 'color', 'none') ;
 
 perturbation = [-1/3 0 1/3];
 

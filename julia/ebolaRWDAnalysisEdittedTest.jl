@@ -1,8 +1,12 @@
 #import Pkg
 #Pkg.add("Dates")
 
+import Pkg
+using Pkg
 
-using Debugger, JuliaInterpreter, Trapz, ProfileView, CSV, DataFrames, Tables, DataFrames, Dates
+Pkg.instantiate()
+
+using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 include("juliaUnderRepFunctions.jl")
 

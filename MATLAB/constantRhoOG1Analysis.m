@@ -7,7 +7,7 @@ clc
 addpath('functions')
 addpath('../packages/MatlabToolbox-master') % for weighted quantile calculation
 
-pwd()
+rng(1)
 
 load('../MATs/noLimitNewMethodPrior1And3.mat')
 
@@ -16,8 +16,8 @@ incidenceAll = noLimitNewMethodPrior1And3.reportedWeeklyI;
 numOutbreaks = 10;
 numRhos = 9;
 
-% idx = str2num(getenv('SLURM_ARRAY_TASK_ID'));
-idx = 1;
+idx = str2num(getenv('SLURM_ARRAY_TASK_ID'));
+% idx = 1;
 
 
 w = (readtable("../CSVs/siDaily.csv").wTrue)';
@@ -32,15 +32,23 @@ likeliMat = zeros(11, M, numOutbreaks*numRhos);
 OG1CI95R = nan(2, 11, numOutbreaks*numRhos);
 OG1meanR = nan(11, numOutbreaks*numRhos);
 
-for outbreak = 1:(numOutbreaks*numRhos)
+sampleFactor = 10;
 
+for outbreak = 1:(numOutbreaks*numRhos)
     
-    [R3DMat(:, :, outbreak), ~, likeliMat(:, :, outbreak)] = OG1_RInference_Trick(incidenceAll((((idx-1)*11*10*numRhos) + (outbreak-1)*11+1):(((idx-1)*11*10*numRhos) + (outbreak*11))), w, priorShapeScale, P, M);
+    disp(outbreak)
+
+    [R3DMat(:, :, outbreak), ~, likeliMat(:, :, outbreak)] = ...
+        OG1_RInference_Trick(incidenceAll((((idx-1)*11*10*numRhos) + ...
+        (outbreak-1)*11+1):(((idx-1)*11*10*numRhos) + (outbreak*11))), ...
+        w, priorShapeScale, P, M, sampleFactor);
 
     for t = 2:11
 
-        OG1CI95R(:, t, outbreak) = iosr.statistics.quantile(R3DMat(t, :, outbreak), [0.025 0.975], [], [], likeliMat(t, :, outbreak));
-        OG1meanR(t, outbreak) = sum(R3DMat(t, :, outbreak).*likeliMat(t, :, outbreak))/sum(likeliMat(t, :, outbreak));
+        OG1CI95R(:, t, outbreak) = iosr.statistics.quantile(R3DMat(t, :,...
+            outbreak), [0.025 0.975], [], [], likeliMat(t, :, outbreak));
+        OG1meanR(t, outbreak) = sum(R3DMat(t, :, outbreak).*likeliMat(t, ...
+            :, outbreak))/sum(likeliMat(t, :, outbreak));
 
     end
 
@@ -50,7 +58,8 @@ OG1meanR = reshape(OG1meanR, [], 1);
 OG1lowerR = reshape(squeeze(OG1CI95R(1, :, :)), [], 1);
 OG1upperR = reshape(squeeze(OG1CI95R(2, :, :)), [], 1);
 
-idxs = (((idx-1)*11*10*numRhos) + 1):(((idx-1)*11*10*numRhos) + (numRhos*numOutbreaks*11));
+idxs = (((idx-1)*11*10*numRhos) + 1):(((idx-1)*11*10*numRhos) +...
+    (numRhos*numOutbreaks*11));
 
 incidenceConsidered = incidenceAll(idxs);
 

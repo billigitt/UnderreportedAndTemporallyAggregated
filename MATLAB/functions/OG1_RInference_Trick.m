@@ -1,7 +1,14 @@
-function [Rmat, dailyICell, likelihood] = OG1_RInference_Trick(I, w, priorShapeScale, P, M)
+function [Rmat, dailyICell, likelihood] = OG1_RInference_Trick(I, w, priorShapeScale, P, M, sampleFactor)
+
+%function that uses a likelihood trick to improve on OG1 method. We also
+%'oversample' by scaling the samples up by a factor of 'sampleFactor' to
+%speed up computation time.
 
 %pre-allocate 'daily' incidence (may not be daily but we call it that for
 %ease)
+
+%To do (14th Nov): write out to do list from meeting. Fix this function!
+
 Tweekly = length(I);
 
 T = Tweekly*P;
@@ -27,20 +34,20 @@ likelihood = ones(Tweekly, M);
 
 %begin routine
 
-f = waitbar(0,'1','Name','Calculating risks...',...
-    'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
-
-setappdata(f,'canceling',0);
+% f = waitbar(0,'1','Name','Calculating risks...',...
+%     'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+% 
+% setappdata(f,'canceling',0);
 
 for t = 2:Tweekly
 
-    if getappdata(f,'canceling')
-
-        break
-
-    end
-
-    waitbar((t-1)/(Tweekly-1),f,sprintf("t = "+t+" (of "+1+" to "+Tweekly+")"))
+%     if getappdata(f,'canceling')
+% 
+%         break
+% 
+%     end
+% 
+%     waitbar((t-1)/(Tweekly-1),f,sprintf("t = "+t+" (of "+1+" to "+Tweekly+")"))
 
     wTmp = w;
     newDailyIncidence = [];
@@ -53,30 +60,28 @@ for t = 2:Tweekly
         disp(numAcc)
 
         %sample from reconstructed incidence proportional to likelihood
-        
-        disp(I)
-        disp("Hello")
-        disp(t) 
+        idxSample = randsample(1:M, M*sampleFactor, true, likelihood(t-1, :));
 
-        idxSample = randsample(1:M, M, true, likelihood(t-1, :));
-        dailyITmp = [dailyI(1:(t-1)*P, idxSample); zeros(P, M)];
+
+        dailyITmp = [dailyI(1:(t-1)*P, idxSample); zeros(P, M*sampleFactor)];
 
         %Sample Rt from prior
-        RTmpMat = gamrnd(shape, scale, [1 M]);
+        RTmpMat = gamrnd(shape, scale, [1 M*sampleFactor]);
 
         %Repeated renewal equation
-        dailyITmp(((t-1)*P + 1), :) = renewalEqnInference(dailyI(1:((t-1)*P), :), ...
+        dailyITmp(((t-1)*P + 1), :) = renewalEqnInference(dailyITmp(1:((t-1)*P), :), ...
             wTmp, RTmpMat);
 
         for tt = 2:(P-1)
 
-            dailyITmp(((t-1)*P + tt), :) = renewalEqnInference([dailyI(1:((t-1)*P), :); ...
-                dailyITmp(((t-1)*P + 1):((t-1)*P + tt-1), :)], wTmp, RTmpMat);
+            
+            dailyITmp(((t-1)*P + tt), :) = renewalEqnInference(dailyITmp(1:((t-1)*P + tt-1), :),...
+                wTmp, RTmpMat);
 
         end
 
         %exclude simulations that already exceed data
-        idxAccept = (sum(dailyITmp(((t-1)*P + 1):((t-1)*P + tt-1), :)) <= I(t));
+        idxAccept = (sum(dailyITmp(((t-1)*P + 1):((t-1)*P + P-1), :)) <= I(t));
         numAcc = numAcc + sum(idxAccept);
         dailyITmp = dailyITmp(:, idxAccept);
         RTmpMat = RTmpMat(idxAccept);
@@ -86,7 +91,7 @@ for t = 2:Tweekly
         dailyITmp(end, :) = finalDay;
 
         %calculate likelihood of the final 'day' matching the weekly data (via Poisson process)
-        gammaTmp = fliplr(wTmp(1:((t-1)*P+P-1)))*[dailyI(1:((t-1)*P), idxAccept); dailyITmp(((t-1)*P+1):((t-1)*P + P-1), :)];
+        gammaTmp = fliplr(wTmp(1:((t-1)*P+P-1)))*dailyITmp(1:((t-1)*P + P-1), :);
         gammaTmp = RTmpMat.*gammaTmp; % 1 by M vector
 
         %append time t quantities
@@ -109,6 +114,6 @@ for t = 2:Tweekly
 
 end
 
-delete(f)
+% delete(f)
 
 end

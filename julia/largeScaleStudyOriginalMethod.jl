@@ -1,21 +1,9 @@
-#import Pkg;
-#Pkg.add("ProgressMeter")
-#Pkg.add("Profile")
-#Pkg.add("ProfileView")
-#Pkg.add("Trapz")
-#Pkg.add("QuadGK")
-#Pkg.add("Random")
-#Pkg.add("Debugger")
-#kg.add("JuliaInterpreter")
-#Pkg.add("CSV")
-#Pkg.add("DataFrames")
-#Pkg.add("Tables")
-
 import Pkg
-Pkg.add(["QuadGK", "Distributions", "StatsBase", "Random", "DataFrames", "CSV", "Dates", "Distributed", "SharedArrays", "ProgressMeter", "Trapz", "Debugger", "JuliaInterpreter", "Tables", "Plots"])
+using Pkg
 
+Pkg.instantiate()
 
-using Debugger, JuliaInterpreter, Trapz, CSV, DataFrames, Tables, Plots, Distributed, ProgressMeter, Random
+using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 addprocs(24)
 Random.seed!(1)
