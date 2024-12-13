@@ -9,7 +9,7 @@ This README.md file contains the current work and outline for our project on inf
 
 This repository contains code for reproducing the results presented in the proposed manuscript, "Efficient simulation-based inference of the time-dependent reproduction number from temporally aggregated and under-reported disease incidence time series data".
 
-All code written in Julia 1.11.1, or MATLAB, compatible with version R2021b.
+All code written in Julia 1.11.1, or MATLAB, compatible with version R2021b. Julia files should run automatically, using packages from versions code was created in (manifest.toml and project.toml files have been instantiated and moved to top directory).
 
 Code used to generate the panels comprising figure 1 can be found in "MATLAB/schematics.m".
 
