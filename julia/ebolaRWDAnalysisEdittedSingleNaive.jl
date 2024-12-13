@@ -1,8 +1,14 @@
 import Pkg
 using Pkg
 
+# Set path to directory this file resides in
+cd(dirname(@__FILE__))
+
+# Load the environment and install any required packages
+Pkg.activate("../")
 Pkg.instantiate()
 
+# Specify packages needed for this script
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 include("juliaUnderRepFunctions.jl")
@@ -58,5 +64,5 @@ weekly_vec_naive = [weekly_vec_naive; 3] #round(add on the extra case*2.5)
             reportedWeeklyI = [weekly_vec; 1] #add on the extra case
         )
     
-        CSV.write("realWorldNovelInferenceEbolaSingleNaiveRho04.csv", df1a)
+        CSV.write("../CSVs/realWorldNovelInferenceEbolaSingleNaiveRho04.csv", df1a)
 
