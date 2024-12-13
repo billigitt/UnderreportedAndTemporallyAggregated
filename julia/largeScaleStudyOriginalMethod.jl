@@ -1,8 +1,14 @@
 import Pkg
 using Pkg
 
+# Set path to directory this file resides in
+cd(dirname(@__FILE__))
+
+# Load the environment and install any required packages
+Pkg.activate("../")
 Pkg.instantiate()
 
+# Specify packages needed for this script
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 addprocs(24)
@@ -106,4 +112,4 @@ end
 
 end
 
-CSV.write("largeScaleStudyOriginalMethodClusterMaxInc500.csv", dfNew)
+CSV.write("../CSVs/largeScaleStudyOriginalMethodClusterMaxInc500.csv", dfNew)

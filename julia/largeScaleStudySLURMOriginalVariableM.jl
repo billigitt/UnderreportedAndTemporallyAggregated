@@ -1,8 +1,14 @@
 import Pkg
 using Pkg
 
+# Set path to directory this file resides in
+cd(dirname(@__FILE__))
+
+# Load the environment and install any required packages
+Pkg.activate("../")
 Pkg.instantiate()
 
+# Specify packages needed for this script
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
 
 
@@ -108,6 +114,6 @@ for i in inferenceIdx
 
 end
 
-fileName = "largeScaleStudyOriginalMethodClusterNoLimitPrior1And3FirstDay1VariableM_$idx.csv"
+fileName = "../CSVs/largeScaleStudyOriginalMethodClusterNoLimitPrior1And3FirstDay1VariableM_$idx.csv"
 
 CSV.write(fileName, dfNew)
