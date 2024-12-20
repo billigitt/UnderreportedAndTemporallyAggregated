@@ -3,10 +3,15 @@
 import Pkg
 using Pkg
 
+# Set path to directory this file resides in
+cd(dirname(@__FILE__))
+
+# Load the environment and install any required packages
+Pkg.activate("../")
 Pkg.instantiate()
 
+# Specify packages needed for this script
 using QuadGK, Distributions, StatsBase, Random, DataFrames, CSV, Dates, Distributed, SharedArrays, ProgressMeter, Trapz, Debugger, JuliaInterpreter, Tables, Plots
-
 
 # Simulate Ebola epidemic. First phase (R=10) is highly transmissible, then quite (R=1.5), then low (R=0.75).
 # This is to give a realistic epidemic curve. We assume that the epidemic is reported with a probability of rho.
@@ -15,7 +20,7 @@ include("juliaUnderRepFunctions.jl")
 
 Random.seed!(1)
 
-inferenceBatch1 = CSV.read("CSVs/largeScaleStudy.csv", DataFrame)
+inferenceBatch1 = CSV.read("../CSVs/largeScaleStudy.csv", DataFrame)
 
 reportedWeeklyI = inferenceBatch1.reportedWeeklyI[23:33]
 weeklyI = inferenceBatch1.weeklyI[23:33]
@@ -33,4 +38,4 @@ divisionsPerP = Int(1e2)
 wWeekly = siCalcNew(wContGamPar, weeklyP, nWeeksForSI, divisionsPerP)
 
 #CSV.write("SIDaily.csv", DataFrame(wDaily = wDaily))
-CSV.write("SIWeekly.csv", DataFrame(wWeekly = wWeekly))
+CSV.write("../CSVs/SIWeekly.csv", DataFrame(wWeekly = wWeekly))
